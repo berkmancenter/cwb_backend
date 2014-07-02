@@ -15,6 +15,8 @@ gem 'uuidtools'
 
 gem 'thin'
 
+gem 'nokogiri'
+
 group :test do
   gem 'minitest-spec-rails'
 end

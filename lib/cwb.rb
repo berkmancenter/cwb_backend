@@ -25,3 +25,5 @@ module CWB
     })
   end
 end
+
+require 'cwb/resource'
