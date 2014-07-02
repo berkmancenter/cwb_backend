@@ -14,3 +14,7 @@ gem 'sparql-client'
 gem 'uuidtools'
 
 gem 'thin'
+
+group :test do
+  gem 'minitest-spec-rails'
+end
