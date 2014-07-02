@@ -1,6 +1,4 @@
 class SessionsController < ApplicationController
-  skip_before_action :verify_authenticity_token
-
   def create
     cwb_session = Session.create
     session[:token] = cwb_session[:token]
