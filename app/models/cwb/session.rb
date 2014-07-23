@@ -1,4 +1,4 @@
-class Session < CWB::Resource
+class CWB::Session < CWB::Resource
   attr_reader :token
 
   PATTERN = [

@@ -1,13 +1,13 @@
 class SessionsController < ApplicationController
   def create
-    cwb_session = Session.create
+    cwb_session = CWB::Session.create
     session[:token] = cwb_session[:token]
 
     render json: cwb_session
   end
 
   def destroy
-    Session.destroy_for_token(params[:token] || session[:token])
+    CWB::Session.destroy_for_token(params[:token] || session[:token])
     session[:token] = nil
 
     render nothing: true

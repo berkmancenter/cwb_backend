@@ -1,4 +1,4 @@
-class Account < CWB::Resource
+class CWB::Account < CWB::Resource
   PATTERN = [
     [:resource, RDF.type, RDF::FOAF.OnlineAccount],
     [:resource, RDF::FOAF.nick, :nick],
