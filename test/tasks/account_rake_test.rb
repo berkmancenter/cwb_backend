@@ -7,7 +7,7 @@ describe 'account:list task' do
     Rake::Task.define_task(:environment)
   end
 
-  it 'should list all accounts' do
+  it 'should have list' do
     skip
   end
 end

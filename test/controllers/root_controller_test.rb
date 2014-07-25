@@ -1,13 +1,28 @@
 require 'test_helper'
 
-describe "RootController" do
-  describe "#index" do
-    it "renders index.html from the build" do
-      skip
+class RootControllerTest < ActionController::TestCase
+  describe "RootController" do
+    describe "#index" do
+      it "renders index.html from the build" do
+        skip
+      end
+
+      it "handles a missing build" do
+        skip
+      end
+    end
+  end
+
+  describe "#download" do
+    it 'gets success on request' do
+      get :download
+      assert_response :success
     end
 
-    it "handles a missing build" do
-      skip
+    it 'gets correct headers when attempting rdf download' do
+      get :download 
+      assert_equal response.headers['Content-Type'], 'application/rdf+xml'
+      assert_match ".rdf", response.headers['Content-Disposition']
     end
   end
 end

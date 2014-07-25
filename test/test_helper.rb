@@ -1,6 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
+require 'action_controller/test_case'
 
 require File.expand_path('../../lib/cwb', __FILE__)
 require File.expand_path('../../lib/cwb/pim', __FILE__)

@@ -2,11 +2,11 @@ require 'test_helper'
 
 describe "SessionsController" do
   before do
-    Session.client_class = MockCWB
+    CWB::Session.client_class = MockCWB
   end
 
   after do
-    Session.client_class = nil
+    CWB::Session.client_class = nil
   end
 
   describe "#create" do

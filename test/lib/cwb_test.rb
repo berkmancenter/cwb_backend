@@ -9,7 +9,6 @@ describe "CWB" do
 
   describe "::sparql" do
     it "creates and returns a sparql client" do
-      puts CWB.sparql
       CWB.sparql.must_be_instance_of SPARQL::Client
     end
 
