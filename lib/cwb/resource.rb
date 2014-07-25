@@ -2,16 +2,22 @@ class CWB::Resource
   class << self
     attr_accessor :client_class
   end
-
+  
   def self.client(mode)
     (@client_class || CWB).sparql(mode)
   end
 
+  def pattern
+   super 
+  end
+  
   ##
   # @param  [RDF::Value] resource
   # @return [Array(Array)]
+  #
+  # patten set by super class
   def self.graph_pattern(resource = nil)
-    bind_pattern(const_get(:PATTERN), resource)
+    bind_pattern(pattern, resource)
   end
 
   ##

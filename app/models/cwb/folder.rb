@@ -1,11 +1,13 @@
 module CWB
   class Folder < CWB::Node
-    PATTERN = [
-      [:resource, RDF.type, PIM.Directory],
-      [:resource, PIM.project, :project],
-      [:resource, RDF::DC.title, :name],
-      [:resource, RDF::DC.source, :path]
-    ].freeze
+    def self.pattern
+      [
+        [:resource, RDF.type, PIM.Directory],
+        [:resource, PIM.project, :project],
+        [:resource, RDF::DC.title, :name],
+        [:resource, RDF::DC.source, :path]
+      ].freeze
+    end
 
     OPTIONAL = [
       [:resource, PIM.colocation, :parent]

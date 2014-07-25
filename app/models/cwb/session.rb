@@ -2,9 +2,11 @@ module CWB
   class Session < CWB::Resource
     attr_reader :token
 
-    PATTERN = [
-      [:resource, RDF::FOAF.sha1, :token]
-    ].freeze
+    def self.pattern
+      [
+        [:resource, RDF::FOAF.sha1, :token]
+      ].freeze
+    end
 
     def to_hash
       super.merge(token: @token.to_s)

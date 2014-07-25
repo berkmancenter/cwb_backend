@@ -1,12 +1,14 @@
 module CWB
   class Account < CWB::Resource
-    PATTERN = [
+    self.pattern
+    [
       [:resource, RDF.type, RDF::FOAF.OnlineAccount],
       [:resource, RDF::FOAF.nick, :nick],
       # [:resource, RDF::FOAF.name, :name], # TODO
       [:resource, RDF::FOAF.mbox, :email],
       [:resource, PIM.password, :password] # SHA-1 of password
     ].freeze
+  end
 
     def self.query(graph = nil, options = {})
       super(graph, { distinct: true }.merge(options)).order_by(:nick)

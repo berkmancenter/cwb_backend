@@ -1,9 +1,11 @@
 module CWB
   class Vocabulary < CWB::Resource
-    PATTERN = [
-      [:resource, RDF.type, PIM.Vocabulary],
-      [:resource, PIM.project, :project]
-    ].freeze
+    def self.pattern
+      [
+        [:resource, RDF.type, PIM.Vocabulary],
+        [:resource, PIM.project, :project]
+      ].freeze
+    end
 
     def self.each(scope_id = nil, &block)
       resources(scope_id).each(&block)

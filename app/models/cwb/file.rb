@@ -1,14 +1,16 @@
 module CWB
   class File < CWB::Node
-    PATTERN = [
-      [:resource, RDF.type, PIM.File],
-      [:resource, PIM.project, :project],
-      [:resource, PIM.colocation, :folder],
-      [:resource, RDF::DC.title, :name],
-      [:resource, RDF::DC.source, :path],
-      [:resource, RDF::DC.created, :created],
-      [:resource, RDF::DC.extent, :size]
-    ].freeze
+    def self.pattern
+      [
+        [:resource, RDF.type, PIM.File],
+        [:resource, PIM.project, :project],
+        [:resource, PIM.colocation, :folder],
+        [:resource, RDF::DC.title, :name],
+        [:resource, RDF::DC.source, :path],
+        [:resource, RDF::DC.created, :created],
+        [:resource, RDF::DC.extent, :size]
+      ].freeze
+    end
 
     def to_hash
       super.merge(
