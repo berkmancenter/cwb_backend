@@ -27,6 +27,6 @@ module CWB
     # 4store 1.1.5 requires that SPARQL 1.1 Update requests be performed
     # using the legacy POST application/x-www-form-urlencoded mechanism
     # instead of the more straightforward POST application/sparql-update
-    # mechanism:
+    # mechanism
   end
 end

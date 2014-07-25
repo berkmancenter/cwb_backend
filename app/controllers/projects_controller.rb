@@ -4,7 +4,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    if !(resource = CWB::Project.find(params[:project_id])
+    if !(resource = CWB::Project.find(params[:project_id]))
       render json: {}, status: 404
     else
       render json: resource

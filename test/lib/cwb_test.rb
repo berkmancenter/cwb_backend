@@ -1,12 +1,15 @@
 require 'test_helper'
+require 'cwb'
 
 describe "CWB" do
+
   it "has a frozen uri" do
     assert CWB::BASE_URI.frozen?
   end
 
   describe "::sparql" do
     it "creates and returns a sparql client" do
+      puts CWB.sparql
       CWB.sparql.must_be_instance_of SPARQL::Client
     end
 
