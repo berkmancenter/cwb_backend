@@ -11,5 +11,5 @@ describe "AccountsController" do
     it "renders an account as json" do
       skip
     end
-
+  end
 end

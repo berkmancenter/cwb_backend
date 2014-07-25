@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
 
   def authenticated
     render json: {
-      authenticated: !!session[:token],
+      authenticated: !session[:token].nil?,
       token: session[:token] || false
     }
   end
