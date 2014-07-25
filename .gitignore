@@ -16,3 +16,8 @@
 /log/*.log
 /tmp
 public/static
+
+# Ignore vim temp and backup files
+*~
+*.swp
+*.swo
