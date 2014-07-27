@@ -10,7 +10,7 @@ class CWB::Resource
   def pattern
    super 
   end
-  
+
   ##
   # @param  [RDF::Value] resource
   # @return [Array(Array)]

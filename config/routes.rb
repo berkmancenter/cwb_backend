@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root 'root#index'
+  get 'download', to: 'root#download'
 
   resources :sessions, only: [:create, :destroy]
 

@@ -29,6 +29,7 @@ GEM
       tzinfo (~> 1.1)
     arel (5.0.1.20140414130214)
     builder (3.2.2)
+    coderay (1.0.9)
     daemons (1.1.9)
     erubis (2.7.0)
     eventmachine (1.0.3)
@@ -42,6 +43,7 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.6.0)
     minitest (5.3.5)
@@ -53,6 +55,10 @@ GEM
     nokogiri (1.6.2.1)
       mini_portile (= 0.6.0)
     polyglot (0.3.5)
+    pry (0.9.12.2)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -84,6 +90,7 @@ GEM
       rdf-xsd (~> 1.1)
     rdf-xsd (1.1.1)
       rdf (~> 1.1)
+    slop (3.4.6)
     sparql-client (1.1.2)
       net-http-persistent (~> 1.4)
       rdf (~> 1.1)
@@ -118,6 +125,7 @@ DEPENDENCIES
   json
   minitest-spec-rails
   nokogiri
+  pry
   rails (= 4.1.2)
   rdf
   rdf-rdfxml

@@ -17,6 +17,8 @@ gem 'thin'
 
 gem 'nokogiri'
 
+gem 'pry'
+
 group :test do
   gem 'minitest-spec-rails'
 end

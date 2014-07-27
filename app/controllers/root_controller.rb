@@ -12,4 +12,18 @@ class RootController < ApplicationController
       render text: "Couldn't find the build."
     end
   end
+
+  def download
+    require 'rdf/rdfxml'
+    @writer = RDF::Writer.for(:rdfxml).buffer do |write|
+      query = CWB.sparql.construct([:s, :p, :o]).where([:s, :p, :o])
+      query = query.from(RDF::URI(params[:project_id])) if params[:project_id]
+      write << query.result
+    end
+
+    send_data @writer,
+              filename: 'pim.rdf',
+              type: 'application/rdf+xml',
+              disposition: 'attachment'
+  end
 end
