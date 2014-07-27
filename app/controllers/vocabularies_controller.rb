@@ -1,13 +1,9 @@
 class VocabulariesController < ApplicationController
-  def show
-    render json: CWB::Vocabulary.each(params[:project_id])
+  def index
+  render json: RDF::Vocabulary('http://libraries.mit.edu/ontologies/pim/pim1.0#')
   end
 
-  # def show
-  #   if !(resource = CWB::Vocabulary.find(params[:id], params[:project_id]))
-  #     render :json => {}, :status => 404
-  #   else
-  #     render :json => resource
-  #   end
-  # end
+  def show
+    render json: CWB::Vocabulary.each(params[:vocabulary_id])
+  end
 end

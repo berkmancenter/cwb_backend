@@ -20,7 +20,6 @@ class ProjectsController < ApplicationController
       end,
       graph: uri_id
     )
-    
 
     render json: {
       id: @uri.to_s,
@@ -31,37 +30,42 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    if !(resource = CWB::Project.find(params[:project_id]))
+    if !(resource = CWB::Project.find(params[:id]))
       render json: {}, status: 404
     else
       render json: resource
     end
   end
 
-  def update
-    graph_uri = params[:id]
+  # def update
 
-    update(<<-EOS)
-      WITH <#{graph_uri}>
-      DELETE {
-        <#{graph_uri}> dcterms:title ?name .
-        <#{graph_uri}> dcterms:description ?description .
-      }
-      INSERT {
-        <#{graph_uri}> dcterms:title "#{params[:name]}" .
-        <#{graph_uri}> dcterms:description "#{params[:description]}" .
-      }
-      WHERE {
-        <#{graph_uri}> dcterms:title ?name .
-        <#{graph_uri}> dcterms:description ?description .
-      }
-    EOS
+  #   CWB.sparql(:update).insert_data(
+  #   update(<<-EOS)
+  #     WITH <#{graph_uri}>
+  #     DELETE {
+  #       <#{graph_uri}> dcterms:title ?name .
+  #       <#{graph_uri}> dcterms:description ?description .
+  #     }
+  #     INSERT {
+  #       <#{graph_uri}> dcterms:title "#{params[:name]}" .
+  #       <#{graph_uri}> dcterms:description "#{params[:description]}" .
+  #     }
+  #     WHERE {
+  #       <#{graph_uri}> dcterms:title ?name .
+  #       <#{graph_uri}> dcterms:description ?description .
+  #     }
+  #   EOS
 
-    render json: {
-      id: graph_uri,
-      name: params[:name],
-      description: params[:description],
-      path: params[:path],
-    }
+  #   render json: {
+  #     id: graph_uri,
+  #     name: params[:name],
+  #     description: params[:description],
+  #     path: params[:path],
+  #   }
+  # end
+
+  def destroy
+    CWB.sparql(:update).delete
   end
+
 end

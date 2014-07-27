@@ -3,17 +3,16 @@ Rails.application.routes.draw do
   get 'download', to: 'root#download'
 
   resources :sessions, only: [:create, :destroy]
-
   resources :accounts
-  resources :vocabularies,    id: /[^\/]+/
 
   resources :projects,     id: /[^\/]+/ do
     resources :folders,    id: /[^\/]+/
     resources :files,      id: /[^\/]+/
   end
 
-  # resources :vocabularies
-  # resources :terms,      id: /[^\/]+/
+  resources :vocabularies, vocabulary_id: /[^\/]+/ do
+    resources :terms,      id: /[^\/]+/
+  end
 
   get '/authenticated', to: 'sessions#authenticated'
   get '/logout', to: 'sessions#destroy'

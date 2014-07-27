@@ -25,5 +25,6 @@ module CWB
         path: @path.to_s
       )
     end
+
   end
 end
