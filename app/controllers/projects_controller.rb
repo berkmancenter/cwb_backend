@@ -4,9 +4,7 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    uri_uuid = UUIDTools::UUID.timestamp_create.to_s
-    uri_id  = CWB::BASE_URI.join(uri_uuid)
-    ntriples_object = CWB::Project.uri_id
+    uri_id = CWB::Project.uri_id
 
     CWB.sparql(:update).insert_data(
       RDF::Graph.new do |graph|
@@ -14,14 +12,14 @@ class ProjectsController < ApplicationController
         CWB::Project.pattern.each do |ntriple|
           # pops first ele (:resource) off pattern
           ntriple.shift
-          ntriple.unshift(ntriples_object)
+          ntriple.unshift(uri_id)
           if ntriple[-1] == :name
             ntriple.pop
-            ntriple.push('test') 
+            ntriple.push(params[:name]) 
           end
           if ntriple[-1] == :description
             ntriple.pop
-            ntriple.push('testdesc') 
+            ntriple.push(params[:description]) 
           end
           graph << ntriple
         end
@@ -42,6 +40,34 @@ class ProjectsController < ApplicationController
     else
       render json: resource
     end
+  end
+
+  def update
+    uri_id = RDF::URI(params[:id])
+    data = [[uri_id, RDF.type, PIM.Project]]
+    CWB.sparql(:update).delete_data(data)
+
+    uri_id = RDF::URI(uri_id)
+
+    CWB.sparql(:update).insert_data(
+      RDF::Graph.new do |graph|
+        # pattern contains each predicate and object
+        CWB::Project.pattern.each do |ntriple|
+          # pops first ele (:resource) off pattern
+          ntriple.shift
+          ntriple.unshift(uri_id)
+          if ntriple[-1] == :name
+            ntriple.pop
+            ntriple.push(params[:name]) 
+          end
+          if ntriple[-1] == :description
+            ntriple.pop
+            ntriple.push(params[:description]) 
+          end
+          graph << ntriple
+        end
+      end
+    ) 
   end
 
   def destroy
