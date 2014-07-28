@@ -17,11 +17,11 @@ class ProjectsController < ApplicationController
           ntriple.unshift(ntriples_object)
           if ntriple[-1] == :name
             ntriple.pop
-            ntriple.push(params[:name]) 
+            ntriple.push('test') 
           end
           if ntriple[-1] == :description
             ntriple.pop
-            ntriple.push(params[:description]) 
+            ntriple.push('testdesc') 
           end
           graph << ntriple
         end
@@ -45,7 +45,9 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
-    CWB.sparql(:update).delete_data(params[:id])
+    uri_id = RDF::URI(params[:id])
+    data = [[uri_id, RDF.type, PIM.Project]]
+    CWB.sparql(:update).delete_data(data)
   end
 
 end
