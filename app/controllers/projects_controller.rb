@@ -15,14 +15,21 @@ class ProjectsController < ApplicationController
           # pops first ele (:resource) off pattern
           ntriple.shift
           ntriple.unshift(ntriples_object)
+          if ntriple[-1] == :name
+            ntriple.pop
+            ntriple.push(params[:name]) 
+          end
+          if ntriple[-1] == :description
+            ntriple.pop
+            ntriple.push(params[:description]) 
+          end
           graph << ntriple
         end
-      end,
-      graph: uri_id
+      end
     )
 
     render json: {
-      id: @uri.to_s,
+      id: uri_id,
       name: params[:name],
       description: params[:description],
       path: params[:path]
@@ -37,35 +44,8 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # def update
-
-  #   CWB.sparql(:update).insert_data(
-  #   update(<<-EOS)
-  #     WITH <#{graph_uri}>
-  #     DELETE {
-  #       <#{graph_uri}> dcterms:title ?name .
-  #       <#{graph_uri}> dcterms:description ?description .
-  #     }
-  #     INSERT {
-  #       <#{graph_uri}> dcterms:title "#{params[:name]}" .
-  #       <#{graph_uri}> dcterms:description "#{params[:description]}" .
-  #     }
-  #     WHERE {
-  #       <#{graph_uri}> dcterms:title ?name .
-  #       <#{graph_uri}> dcterms:description ?description .
-  #     }
-  #   EOS
-
-  #   render json: {
-  #     id: graph_uri,
-  #     name: params[:name],
-  #     description: params[:description],
-  #     path: params[:path],
-  #   }
-  # end
-
   def destroy
-    CWB.sparql(:update).delete
+    CWB.sparql(:update).delete_data(params[:id])
   end
 
 end
