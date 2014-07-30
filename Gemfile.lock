@@ -51,6 +51,7 @@ GEM
       minitest (~> 5.0)
       rails (~> 4.1.0.rc2)
     multi_json (1.10.1)
+    mysql2 (0.3.16)
     net-http-persistent (1.9)
     nokogiri (1.6.2.1)
       mini_portile (= 0.6.0)
@@ -124,6 +125,7 @@ DEPENDENCIES
   iconv
   json
   minitest-spec-rails
+  mysql2
   nokogiri
   pry
   rails (= 4.1.2)

@@ -68,6 +68,13 @@ class ProjectsController < ApplicationController
         end
       end
     ) 
+
+    render json: {
+      id: uri_id,
+      name: params[:name],
+      description: params[:description],
+      path: params[:path]
+    }
   end
 
   def destroy

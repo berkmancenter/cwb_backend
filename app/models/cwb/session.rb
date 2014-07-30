@@ -1,5 +1,7 @@
 module CWB
   class Session < CWB::Resource
+  # class Session < ActiveRecord::Base
+  # establish_connection "log_database_#{Rails.env}"
     attr_reader :token
 
     def self.pattern

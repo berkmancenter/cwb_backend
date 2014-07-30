@@ -1,5 +1,7 @@
 module CWB
   class Account < CWB::Resource
+  # class Account < ActiveRecord::Base
+  # establish_connection "log_database_#{Rails.env}"
     def self.pattern
       [
         [:resource, RDF.type, RDF::FOAF.OnlineAccount],

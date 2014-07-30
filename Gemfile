@@ -18,6 +18,7 @@ gem 'thin'
 gem 'nokogiri'
 
 gem 'pry'
+gem 'mysql2'
 
 group :test do
   gem 'minitest-spec-rails'

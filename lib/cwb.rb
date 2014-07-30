@@ -10,7 +10,7 @@ module CWB
   # @return [SPARQL::Client]
 
   def self.sparql(mode = :query)
-    database = YAML.load_file('config/database.yml')
+    database = YAML.load_file('config/rdf_database.yml')
     env = Rails.env
 
     if mode.eql?(:query)
