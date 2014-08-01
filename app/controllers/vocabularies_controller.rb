@@ -1,6 +1,6 @@
 class VocabulariesController < ApplicationController
   def index
-  render json: RDF::Vocabulary('http://libraries.mit.edu/ontologies/pim/pim1.0#')
+    render json: RDF::Vocabulary('http://libraries.mit.edu/ontologies/pim/pim1.0#')
   end
 
   def show

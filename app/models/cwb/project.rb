@@ -15,7 +15,7 @@ module CWB
     end
 
     def self.uri_id
-      return CWB::BASE_URI.join(UUIDTools::UUID.timestamp_create.to_s)
+      CWB::BASE_URI.join(UUIDTools::UUID.timestamp_create.to_s)
     end
 
     def to_hash
@@ -25,6 +25,5 @@ module CWB
         path: @path.to_s
       )
     end
-
   end
 end

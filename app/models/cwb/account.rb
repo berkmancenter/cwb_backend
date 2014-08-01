@@ -15,13 +15,12 @@ module CWB
 
       begin
         self.token = SecureRandom.hex
-      end while self.class.exists?(token: self.token)
+      end while self.class.exists?(token: token)
     end
 
     def encrypt_password
-      if password.present?
-        self.password_hash = BCrypt::Password.create(password)
-      end
+      return false unless password.present?
+      self.password_hash = BCrypt::Password.create(password)
     end
   end
 end

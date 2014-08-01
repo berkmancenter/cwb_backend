@@ -14,6 +14,6 @@ describe CWB::Account do
 
   it 'encrypts the password before save' do
     account = FactoryGirl.create(:account)
-    expect(BCrypt::Password.new(account.password_hash)).to eq(account.password)   
+    expect(BCrypt::Password.new(account.password_hash)).to eq(account.password)
   end
 end
