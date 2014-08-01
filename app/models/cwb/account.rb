@@ -1,30 +1,27 @@
+require 'bcrypt'
+
 module CWB
-  class Account < CWB::Resource
-  # class Account < ActiveRecord::Base
-  # establish_connection "log_database_#{Rails.env}"
-    def self.pattern
-      [
-        [:resource, RDF.type, RDF::FOAF.OnlineAccount],
-        [:resource, RDF::FOAF.nick, :nick],
-        # [:resource, RDF::FOAF.name, :name], # TODO
-        [:resource, RDF::FOAF.mbox, :email],
-        [:resource, PIM.password, :password] # SHA-1 of password
-      ].freeze
+  class Account < ActiveRecord::Base
+    include BCrypt
+    attr_accessor :password
+    validates_presence_of :name, :email, :password, on: :create
+    before_save :encrypt_password
+    before_create :set_auth_token
+
+    private
+
+    def set_auth_token
+      return if token.present?
+
+      begin
+        self.token = SecureRandom.hex
+      end while self.class.exists?(token: self.token)
     end
 
-    def self.query(graph = nil, options = {})
-      super(graph, { distinct: true }.merge(options)).order_by(:nick)
-    end
-
-    # @see app/fixtures/account_fixtures.js
-    def to_hash
-      super.merge(
-        nick: @nick.to_s,
-        # name: @name.to_s, # TODO
-        email: @email.to_s,
-        password: @password.to_s,
-        isAdmin: false
-      )
+    def encrypt_password
+      if password.present?
+        self.password_hash = BCrypt::Password.create(password)
+      end
     end
   end
 end

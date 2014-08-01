@@ -1,42 +1,20 @@
 module CWB
   class Session < CWB::Resource
-  # class Session < ActiveRecord::Base
-  # establish_connection "log_database_#{Rails.env}"
-    attr_reader :token
-
-    def self.pattern
-      [
-        [:resource, RDF::FOAF.sha1, :token]
-      ].freeze
-    end
-
-    def to_hash
-      super.merge(token: @token.to_s)
-    end
-
-    def self.create
-      token = generate_token
-      session_uri = uri(token)
-
-      session_graph = RDF::Graph.new do |graph|
-        graph << [session_uri, RDF::FOAF.sha1, token]
+    def self.authenticate(name, password)
+      account = CWB::Account.find_by_name(name)
+      if BCrypt::Password.new(account.password_hash) == password
+        account 
       end
-
-      client(:update).insert_data(session_graph, graph: session_uri)
-      { token: token }
     end
 
-    def self.destroy_for_token(token)
-      session_uri = uri(token)
-      client(:update).clear_graph(session_uri)
-    end
-
-    def self.uri(token)
-      CWB::BASE_URI.join(token.strip)
-    end
-
-    def self.generate_token
-      Digest::SHA1.hexdigest(rand(36**64).to_s(36)[1..16])
+    def self.reset_auth_token(header)
+      # trims off the Token token=""
+      token = header[13..-2]
+      account = CWB::Account.find_by_token(token)
+      begin
+        account.token = SecureRandom.hex
+      end while CWB::Account.exists?(token: account.token)
+      account.update(token: account.token)
     end
   end
 end
