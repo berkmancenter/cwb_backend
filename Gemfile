@@ -17,9 +17,17 @@ gem 'thin'
 
 gem 'nokogiri'
 
-gem 'pry'
 gem 'mysql2'
+gem 'bcrypt'
+gem 'fabrication'
+
+group :development, :test do
+  gem 'factory_girl_rails'
+  gem 'rspec-rails'
+  gem 'guard-rails'
+end
 
 group :test do
-  gem 'minitest-spec-rails'
+  gem 'database_cleaner'
+  gem 'faker'
 end
