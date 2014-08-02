@@ -1,6 +1,7 @@
 require 'cwb'
 require 'date' # for DateTime
 require 'find' # for Find.find
+require 'pry'
 
 namespace :project do
   desc "List projects in the database."
@@ -54,7 +55,7 @@ namespace :project do
     dir_count = file_count = 0
 
     parent_resource = nil
-    Find.find(project_dir) do |path|
+    Find.find(project_dir.realdirpath.to_path) do |path|  ##problem in here
       next if path.eql?(project_dir)
 
       path = Pathname(path)
