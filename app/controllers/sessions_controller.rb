@@ -1,21 +1,25 @@
 class SessionsController < ApplicationController
   respond_to :json
 
-  def sign_in
+  def create
     account = CWB::Session.authenticate(
       session_params[:name], session_params[:password]
     )
+    
+    response = 
+      if account
+        session[:token] = account.token
+        { success: 'Login is successful!', token: account.token }
+      else
+        { error: 'Login credentials are invalid.', status: :unauthorized }
+      end
 
-    if account
-      render json: { token: account.token }
-    else
-      render json: { error: 'Login credentials are invalid.' },
-                   status: :unauthorized
-    end
+    render json: response 
   end
 
-  def sign_out
-    CWB::Session.reset_auth_token(request.headers['HTTP_AUTHORIZATION'])
+  def destroy
+    CWB::Session.reset_auth_token(session[:token])
+    session[:token] = {}
     redirect_to root_url, notice: 'Logged out!'
   end
 

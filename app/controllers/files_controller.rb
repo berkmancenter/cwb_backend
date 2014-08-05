@@ -1,4 +1,6 @@
 class FilesController < ApplicationController
+  before_filter :authed?
+
   def index
     render json: CWB::File.each
   end

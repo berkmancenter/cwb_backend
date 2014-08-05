@@ -5,14 +5,13 @@ module CWB
       account if BCrypt::Password.new(account.password_hash) == password
     end
 
-    def self.reset_auth_token(header)
-      # trims off the Token token=""
-      token = header[13..-2]
-      account = CWB::Account.find_by_token(token)
+    def self.reset_auth_token(session_token)
+      account = CWB::Account.find_by_token(session_token)
       begin
-        account.token = SecureRandom.hex
-      end while CWB::Account.exists?(token: account.token)
-      account.update(token: account.token)
+        new_token = SecureRandom.hex
+      end while CWB::Account.exists?(token: new_token)
+      account.update_attribute(:token, new_token)
     end
+
   end
 end

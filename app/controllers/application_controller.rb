@@ -1,3 +1,13 @@
 class ApplicationController < ActionController::Base
-  include ApplicationHelper
+  respond_to :json
+  
+  def authed?
+    unless current_user
+      render json: { error: 'You must be logged in.' }, status: :unauthorized 
+    end
+  end
+
+  def current_user
+    @current_user ||= session[:token] && CWB::Account.find_by(token: session[:token])
+  end
 end

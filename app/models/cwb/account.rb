@@ -5,7 +5,7 @@ module CWB
     include BCrypt
     attr_accessor :password
     validates_presence_of :name, :email, :password, on: :create
-    before_save :encrypt_password
+    before_create :encrypt_password
     before_create :set_auth_token
 
     private

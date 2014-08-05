@@ -1,4 +1,6 @@
 class FoldersController < ApplicationController
+  before_filter :authed?
+
   def index
     render json: CWB::Folder.each(params[:project_id])
   end

@@ -1,4 +1,6 @@
 class TermsController < ApplicationController
+  before_filter :authed?
+
   def index
     render json: CWB::Term.each(params[:project_id])
   end

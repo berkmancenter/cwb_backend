@@ -1,4 +1,6 @@
 class ProjectsController < ApplicationController
+  before_filter :authed?
+
   def index
     render json: CWB::Project.each
   end
@@ -35,11 +37,13 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    if !(resource = CWB::Project.find(params[:id]))
-      render json: {}, status: 404
-    else
-      render json: resource
-    end
+    response = 
+      if !(resource = CWB::Project.find(params[:id]))
+        {}, status: 404
+      else
+        resource
+      end
+    render json: response
   end
 
   def update
