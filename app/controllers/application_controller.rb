@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def current_user
+  def set_current_user
     @current_user ||= session[:token] && CWB::Account.find_by(token: session[:token])
   end
 end

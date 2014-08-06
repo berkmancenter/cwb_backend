@@ -1,5 +1,7 @@
 class FilesController < ApplicationController
-  before_filter :authed?
+  before_action :set_current_user
+  before_action :authed?
+  respond_to :json
 
   def index
     render json: CWB::File.each(params[:project_id])

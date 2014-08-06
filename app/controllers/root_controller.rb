@@ -1,5 +1,6 @@
 class RootController < ApplicationController
-  before_filter :authed?, only: ['download']
+  before_action :set_current_user
+  before_action :authed?, only: ['download']
 
   def index
     build_dir = Rails.root.join('public/static/cwb/en')

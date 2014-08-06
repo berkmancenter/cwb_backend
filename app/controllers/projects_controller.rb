@@ -1,5 +1,7 @@
 class ProjectsController < ApplicationController
-  before_filter :authed?
+  before_action :set_current_user
+  before_action :authed?
+  respond_to :json
 
   def index
     render json: CWB::Project.each
@@ -39,7 +41,7 @@ class ProjectsController < ApplicationController
   def show
     response = 
       if !(resource = CWB::Project.find(params[:id]))
-        {}, status: 404
+        { error: 'You must be logged in to do that.', status: 404 }
       else
         resource
       end
