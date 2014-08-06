@@ -13,7 +13,6 @@ Rails.application.routes.draw do
     resources :files,      id: /[^\/]+/
   end
 
-  resources :vocabularies, vocabulary_id: /[^\/]+/ do
-    resources :terms,      id: /[^\/]+/
-  end
+  resources :vocabularies, vocabulary_id: /[^\/]+/
+  resources :terms,      id: /[^\/]+/
 end
