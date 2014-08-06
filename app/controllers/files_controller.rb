@@ -2,7 +2,7 @@ class FilesController < ApplicationController
   before_filter :authed?
 
   def index
-    render json: CWB::File.each
+    render json: CWB::File.each(params[:project_id])
   end
 
   def show
