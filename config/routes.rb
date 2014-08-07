@@ -5,8 +5,8 @@ Rails.application.routes.draw do
   resources :accounts
 
   post '/register', to: 'accounts#create'
-  post '/sign_in', to: 'sessions#create'
-  post '/sign_out', to: 'sessions#destroy'
+  post '/sessions', to: 'sessions#create'
+  get '/logout', to: 'sessions#destroy'
 
   resources :projects,     id: /[^\/]+/ do
     resources :folders,    id: /[^\/]+/

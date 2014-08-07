@@ -3,8 +3,8 @@ describe 'Requesting accounts index' do
     let(:account) { FactoryGirl.create(:account) }
 
     it 'will show a list of all accounts' do
-      post '/sign_in',
-        session: { name: account.name, password: account.password }
+      post '/sessions',
+        session: { username: account.name, password: account.password }
 
       get '/accounts'
       expect(response).to have_http_status(:success)

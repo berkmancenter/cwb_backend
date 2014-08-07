@@ -25,6 +25,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails'
   gem 'guard-rails'
+  gem 'interactive_editor'
 end
 
 group :test do

@@ -5,9 +5,12 @@ class VocabulariesController < ApplicationController
 
   def index
     render json: CWB::Vocabulary.each(params[:vocabulary_id])
+<<<<<<< HEAD
+=======
   end
 
   def show
     render json: RDF::Vocabulary('http://libraries.mit.edu/ontologies/pim/pim1.0#')
+>>>>>>> dgm-works-with-frontend
   end
 end

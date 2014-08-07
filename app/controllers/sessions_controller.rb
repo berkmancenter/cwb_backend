@@ -3,13 +3,13 @@ class SessionsController < ApplicationController
 
   def create
     account = CWB::Session.authenticate(
-      session_params[:name], session_params[:password]
+      session_params[:username], session_params[:password]
     )
     
     response = 
       if account
         session[:token] = account.token
-        { success: 'Login is successful!', token: account.token }
+        { success: 'Login is successful!', status: :success }
       else
         { error: 'Login credentials are invalid.', status: :unauthorized }
       end
@@ -26,6 +26,6 @@ class SessionsController < ApplicationController
   private
 
   def session_params
-    params.require(:session).permit(:id, :name, :password)
+    params.require(:session).permit(:id, :username, :password)
   end
 end

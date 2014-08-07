@@ -41,8 +41,13 @@ class ProjectsController < ApplicationController
   def show
     response = 
       if !(resource = CWB::Project.find(params[:id]))
+<<<<<<< HEAD
+        { status: 404 }
+      elsif
+=======
         { error: 'You must be logged in to do that.', status: 404 }
       else
+>>>>>>> dgm-works-with-frontend
         resource
       end
     render json: response
