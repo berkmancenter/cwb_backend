@@ -39,8 +39,8 @@ class ProjectsController < ApplicationController
   def show
     response = 
       if !(resource = CWB::Project.find(params[:id]))
-        {}, status: 404
-      else
+        { status: 404 }
+      elsif
         resource
       end
     render json: response
