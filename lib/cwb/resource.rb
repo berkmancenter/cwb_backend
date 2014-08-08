@@ -1,117 +1,34 @@
 class CWB::Resource
-  class << self
-    attr_accessor :client_class
-  end
-  
-  def self.client(mode)
-    (@client_class || CWB).sparql(mode)
+  def self.all
+    query = CWB.sparql.select.where(* graph_pattern.each { |f| p f } )
+    sparql_solutions = query.each_solution
+    array = format_sparql_solution(sparql_solutions)
   end
 
-  def pattern
-   super 
-  end
-
-  ##
-  # @param  [RDF::Value] resource
-  # @return [Array(Array)]
-  #
-  # patten set by super class
-  def self.graph_pattern(resource = nil)
-    bind_pattern(pattern, resource)
-  end
-
-  ##
-  # @param  [RDF::Value] resource
-  # @return [Array(Array)]
-  def self.optional_pattern(resource = nil)
-    bind_pattern((const_get(:OPTIONAL) rescue []), resource)
-  end
-
-  ##
-  # @private
-  # @param  [Array(Array)] pattern
-  # @param  [RDF::Value] resource
-  # @return [Array(Array)]
-  def self.bind_pattern(pattern, resource)
-    if !resource
-      pattern
-    else
-      pattern.map do |triple_pattern|
-        triple_pattern.map do |term|
-          term.eql?(:resource) ? resource : term
-        end
-      end
-    end
-  end
-
-  ##
-  # @yield [resource]
-  # @yieldparam  [CWB::Resource] resource
-  # @yieldreturn [void] ignored
-  def self.each(scope_id = nil, &block)
-    return enum_for(:each, scope_id) unless block_given?
-    graph = scope_id ? RDF::URI(scope_id) : nil
-    self.query(graph).execute.each do |result|
-      block.call(self.from_bindings(result))
-    end
-  end
-
-  ##
-  # @param  [RDF::URI] id
-  # @return [CWB::Resource] or `nil`
-  def self.find(id, scope_id = nil)
-    id = RDF::URI(id)
-    query = CWB.sparql.select
-    query = query.from(RDF::URI(scope_id)) if scope_id
-    query = query.where(*self.graph_pattern(id)).optional(*self.optional_pattern(id))
-    if (results = query.execute).empty?
-      nil # not found
-    else
-      self.new(id, results.first)
-    end
-  end
-
-  ##
-  # @param  [RDF::URI] graph
-  # @param  [Hash] options
-  # @return [SPARQL::Client::Query]
-  def self.query(graph = nil, options = {})
-    query = CWB.sparql.select
-    query = query.distinct if options[:distinct]
-    query = query.graph(graph || :graph)
-    query = query.where(*self.graph_pattern)
-    query = query.optional(*self.optional_pattern)
-    query
-  end
-
-  ##
-  # @private
-  # @param  [RDF::Query::Solution] bindings
-  # @return [CWB::Resource]
-  def self.from_bindings(bindings)
+  def self.format_sparql_solution(sparql_solutions, uri = nil)
+    container_array = []
     attrs = {}
-    bindings.each_binding do |name, value|
-      attrs[name] = value unless name.eql?(:resource)
+
+    sparql_solutions.each do |solution|
+      # bindings defined https://github.com/ruby-rdf/rdf/blob/c97373f394d663cd369c1d1943e1124ae9b224fa/lib/rdf/query/solutions.rb#L97
+      solution.bindings.each do |k,v|
+        k == :uri ? k = :id : k
+        hash = Hash[k, v.to_s]
+        attrs.merge!(hash)
+      end
+      return attrs unless uri.nil?
+      container_array << attrs
+      attrs = {}
     end
-    self.new(bindings.resource, attrs)
+
+    # .find needs one hash (attrs) .each needs an array (cont_array)
+    container_array ? container_array : attrs
   end
 
-  def initialize(id, attrs = {})
-    @id = id
-    attrs.each do |k, v|
-      instance_variable_set("@#{k}", v)
-    end
-  end
-
-  def [](attr_name)
-    instance_variable_get("@#{attr_name}")
-  end
-
-  def destroy!
-    CWB.sparql(:update).clear_graph(@id)
-  end
-
-  def to_hash
-    {:id => @id.to_s}
+  def self.find(uri, container_array = [])
+    uri = RDF::URI(uri)
+    query = CWB.sparql.select.where(* graph_pattern(uri).each { |f| p f } )
+    sparql_solutions = query.each_solution
+    hash = format_sparql_solution(sparql_solutions, uri)
   end
 end
