@@ -17,6 +17,7 @@
 /log/*.log
 /tmp
 public/static
+*.orig
 
 # Ignore vim temp and backup files
 *~
