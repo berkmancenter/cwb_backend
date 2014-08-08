@@ -16,7 +16,7 @@ module CWB
     end
 
     def self.resources(project_id = nil)
-      resources = JSON.load(File.read(
+      resources = JSON.load(::File.read(
         Rails.root.join('app/fixtures/term_fixtures.json')
       ))
 
