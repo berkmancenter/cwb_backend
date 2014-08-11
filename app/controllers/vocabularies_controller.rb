@@ -1,6 +1,6 @@
 class VocabulariesController < ApplicationController
   before_action :set_current_user
-  before_aciton :authed?
+  before_action :authed?
   respond_to :json
 
   def index
