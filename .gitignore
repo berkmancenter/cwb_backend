@@ -27,3 +27,7 @@ public/static
 # Ignore added projects store as .nt
 # (mime for N-triples 'http://en.wikipedia.org/wiki/N-Triples') 
 *.nt
+
+# RubyMine
+.idea
+
