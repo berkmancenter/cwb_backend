@@ -19,7 +19,7 @@ class SessionsController < ApplicationController
 
   def destroy
     CWB::Session.reset_auth_token(session[:token])
-    session[:token] = {}
+    session.clear
     redirect_to root_url, notice: 'Logged out!'
   end
 
