@@ -55,7 +55,6 @@ namespace :project do
     dir_count = file_count = 0
 
     parent_resource = nil
-    binding.pry
     Find.find(project_dir) do |path|
       next if path.eql?(project_dir)
 
