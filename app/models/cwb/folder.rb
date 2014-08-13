@@ -1,25 +1,12 @@
 module CWB
   class Folder < CWB::Node
-    def self.pattern
+    def self.graph_pattern(uri = nil)
       [
-        [:resource, RDF.type, PIM.Directory],
-        [:resource, PIM.project, :project],
-        [:resource, RDF::DC.title, :name],
-        [:resource, RDF::DC.source, :path]
-      ].freeze
-    end
-
-    OPTIONAL = [
-      [:resource, PIM.colocation, :parent]
-    ].freeze
-
-    def to_hash
-      super.merge(
-        project: @project.to_s,
-        parent: @parent ? @parent.to_s : nil,
-        name: @name.to_s,
-        path: @path.to_s
-      )
+        [:uri, RDF.type, PIM.Directory],
+        [:uri, PIM.project, :project],
+        [:uri, RDF::DC.title, :name],
+        [:uri, RDF::DC.source, :path]
+      ]
     end
   end
 end

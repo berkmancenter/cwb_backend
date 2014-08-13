@@ -1,21 +1,21 @@
 class FoldersController < ApplicationController
-  before_action :set_current_user
-  before_action :authed?
+  # before_action :set_current_user
+  # before_action :authed?
   respond_to :json
 
   def index
-    render json: CWB::Folder.each(params[:project_id])
+    render json: CWB::Folder.nested_each(params[:project_id])
   end
 
   def show
-    if !(resource = CWB::Folder.find(params[:id], params[:project_id]))
-      render json: {}, status: 404
-    else
-      render json: resource
-    end
-  end
+    query = CWB::Folder.nested_find(params[:id], params[:project_id])
+    resource =
+      if query.nil?
+        { error: 'Query failed', status: :not_found }
+      else
+        query
+      end
 
-  def update
-    todo # TODO
+    render json: resource
   end
 end
