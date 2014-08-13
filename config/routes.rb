@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   post '/register', to: 'accounts#create'
   post '/sessions', to: 'sessions#create'
   get '/logout', to: 'sessions#destroy'
+  get '/authenticated', to: 'sessions#auth'
 
   resources :projects,     id: /[^\/]+/ do
     resources :folders,    id: /[^\/]+/

@@ -55,7 +55,7 @@ namespace :project do
     dir_count = file_count = 0
 
     parent_resource = nil
-    Find.find(project_dir.realdirpath.to_path) do |path|
+    Find.find(project_dir) do |path|
       next if path.eql?(project_dir)
 
       path = Pathname(path)
