@@ -4,10 +4,17 @@ require 'sparql/client' # @see https://rubygems.org/gems/sparql-client
 module CWB
   BASE_URI = RDF::URI('http://facade.mit.edu/dataset/').freeze
 
+  def self.endpoint(mode = :query)
+    database = YAML.load_file('config/rdf_database.yml')
+    env = Rails.env
+
+    database[env]['data_endpoint']
+  end
   # Returns the SPARQL client for the application's database endpoint.
   #
   # @param  [Symbol] `:query` or `:update`
   # @return [SPARQL::Client]
+  #
 
   def self.sparql(mode = :query)
     database = YAML.load_file('config/rdf_database.yml')

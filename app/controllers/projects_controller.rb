@@ -28,6 +28,28 @@ class ProjectsController < ApplicationController
     }
   end
 
+  def update
+    uri = RDF::URI(params[:id])
+    name = project_params[:name]
+    descript = project_params[:description]
+    path = project_params[:path] 
+    params_array = [uri, name, descript, path]
+
+    CWB::Project.update(params_array)
+
+    render json: {
+      id: uri,
+      name: name,
+      description: descript,
+      path: path
+    }
+  end
+
+  def destroy
+    CWB::Project.delete(CWB.endpoint, params[:id])
+    render json: { id: params[:id] }
+  end
+    
   private
 
   def project_params

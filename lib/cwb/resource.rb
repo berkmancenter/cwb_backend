@@ -1,4 +1,5 @@
 class CWB::Resource
+
   def self.all
     # block being passed gives rails server output showing triples being passed in
     query = CWB.sparql.select.where(* graph_pattern.each { |f| p f } )
@@ -42,8 +43,24 @@ class CWB::Resource
         graph_pattern(params[0], params[1], params[2], params[3]).each do |i|
           graph << i
         end
-      end
+      end,
+      graph: params[0]
     )
+  end
+
+  def self.delete(endpoint, graph)
+    uri = URI.parse(endpoint)
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Delete.new(graph)
+    response = http.request(request)
+  end
+
+  def self.update(params)
+    graph = params[0].to_s
+    endpoint = CWB.endpoint
+
+    delete(endpoint, graph)
+    create(params)
   end
 
   def self.format_sparql_solution(sparql_solutions, uri = nil, is_subquery = false)
