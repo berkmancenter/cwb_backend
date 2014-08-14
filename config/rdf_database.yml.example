@@ -2,9 +2,11 @@ production:
   adapter: sparql
   query_endpoint: http://localhost:8890/sparql/
   update_endpoint: http://localhost:8890/update/
+  data_endpoint: http://localhost:8890/data/
 
 development:
   adapter: sparql
   query_endpoint: http://localhost:8890/sparql/
   update_endpoint: http://localhost:8890/update/
+  data_endpoint: http://localhost:8890/data/
 
