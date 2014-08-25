@@ -37,8 +37,9 @@ module CWB
           is_part_of = ::File.basename(::File.expand_path("..", Pathname(f).to_s))
           created = ::File.mtime(f).to_datetime
           size = ::File.size(f)
+          type = FileMagic.new.file(f)
 
-          params = [project_uri,uri,name,path,is_part_of,created,size,project]
+          params = [project_uri,uri,name,path,is_part_of,created,size,project,type]
 
           CWB::File.create(params)
         end

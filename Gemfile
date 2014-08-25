@@ -20,6 +20,7 @@ gem 'nokogiri'
 gem 'mysql2'
 gem 'bcrypt'
 gem 'fabrication'
+gem 'ruby-filemagic'
 
 group :development, :test do
   gem 'factory_girl_rails'

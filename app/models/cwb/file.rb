@@ -2,7 +2,7 @@ module CWB
   class File < CWB::Resource
     def self.graph_pattern(
                             project_uri=nil,uri=nil,name=nil,path=nil,
-                            is_part_of=nil,created=nil,size=nil,project=nil
+                            is_part_of=nil,created=nil,size=nil,project=nil,type=nil
                           )
       [
         [uri||:uri, RDF.type, PIM.File],
@@ -11,7 +11,8 @@ module CWB
         [uri||:uri, RDF::DC.title, name||:name],
         [uri||:uri, RDF::DC.source, path||:path],
         [uri||:uri, RDF::DC.created, created||:created],
-        [uri||:uri, RDF::DC.extent, size||:size]
+        [uri||:uri, RDF::DC.extent, size||:size],
+        [uri||:uri, RDF.type, type||:type]
       ]
     end
   end

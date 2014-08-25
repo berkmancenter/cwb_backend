@@ -137,6 +137,7 @@ GEM
       rspec-mocks (~> 3.0.0)
       rspec-support (~> 3.0.0)
     rspec-support (3.0.3)
+    ruby-filemagic (0.6.1)
     slop (3.6.0)
     sparql-client (1.1.2)
       net-http-persistent (~> 1.4)
@@ -186,6 +187,7 @@ DEPENDENCIES
   rdf
   rdf-rdfxml
   rspec-rails
+  ruby-filemagic
   sparql-client
   thin
   uuidtools
