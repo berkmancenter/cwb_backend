@@ -13,9 +13,9 @@ describe 'With correct authentication credentials' do
   end
 
   context 'signing out' do
-    it 'will clear out session and redirect' do
+    it 'will clear out session token and redirect' do
       get '/logout'
-      expect(session[:token]).to be_empty
+      expect(session[:token]).to be_nil
       expect(response).to have_http_status(:redirect)
     end
 

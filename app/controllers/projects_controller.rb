@@ -12,13 +12,13 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    uri = CWB::Resource.unique_uri
+    uri = RDF::URI(CWB::BASE_URI.to_s + project_params[:name])
     name = project_params[:name]
     descript = project_params[:description]
     path = project_params[:path] 
     params_array = [uri, name, descript, path]
 
-    CWB::Project.create(params_array)
+    CWB::Project.project_init(params_array)
 
     render json: {
       id: uri,
@@ -46,7 +46,7 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
-    CWB::Project.delete(CWB.endpoint, params[:id])
+    CWB::Project.delete(params[:id])
     render json: { id: params[:id] }
   end
     

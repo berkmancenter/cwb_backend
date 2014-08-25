@@ -4,7 +4,7 @@ class FilesController < ApplicationController
   respond_to :json
 
   def index
-    render json: CWB::File.nested_each(params[:project_id])
+    render json: CWB::File.nested_all(params[:project_id])
   end
 
   def show
@@ -17,5 +17,49 @@ class FilesController < ApplicationController
       end
 
     render json: resource
+  end
+
+  # def create
+  #   scope_uri = params[:id]
+  #   uri =  CWB::Resource.unique_uri
+  #   project = params[:id]
+  #   colocation = file_params[:colocation]
+  #   name = file_params[:name]
+  #   path = file_params[:path]
+  #   created = file_params[:created]
+  #   size = file_params[:size]
+
+  #   params_array = 
+  #     [
+  #       scope_uri, uri, project, colocation,
+  #       name, path, created, size
+  #     ]
+
+  #   CWB::File.create(params_array)
+
+  #   render json: {
+  #     id: uri,
+  #     project: params[:id],
+  #     colocation: colocation,
+  #     name: name,
+  #     path: path,
+  #     created: created,
+  #     size: size
+  #   }
+  # end
+
+  # def destroy
+  #   uri = RDF::URI(params[:id])
+  #   # CWB::File.delete(params[:id], params[:project_id])
+  #   CWB.sparql(:update).delete_data( [[ uri, RDF.type, PIM.File]])
+  #   render json: { id: params[:id] }
+  # end
+
+
+  private
+
+  def file_params
+    params.require(:file)
+      .permit(:colocation, :name, :path, :created, :size) 
   end
 end

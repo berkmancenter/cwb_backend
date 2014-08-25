@@ -9,11 +9,12 @@ Rails.application.routes.draw do
   get '/logout', to: 'sessions#destroy'
   get '/authenticated', to: 'sessions#auth'
 
-  resources :projects,     id: /[^\/]+/ do
-    resources :folders,    id: /[^\/]+/
-    resources :files,      id: /[^\/]+/
+  resources :projects,     id: /[^\/]*/ do
+    resources :folders,    id: /[^\/]*/
+    resources :files, except: :destroy,     id: /[^\/]*/
+    post '/files/:id', to: 'files#destroy', id: /[^\/]*/
   end
 
-  resources :vocabularies, vocabulary_id: /[^\/]+/
-  resources :terms,      id: /[^\/]+/
+  resources :vocabularies, vocabulary_id: /[^\/]*/
+  resources :terms,      id: /[^\/]*/
 end
