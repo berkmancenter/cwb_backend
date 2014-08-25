@@ -1,6 +1,8 @@
+require 'rdf/rdfxml'
+
 class RootController < ApplicationController
-  before_action :set_current_user
-  before_action :authed?, only: ['download']
+  # before_action :set_current_user
+  # before_action :authed?, only: ['download']
 
   def index
     build_dir = Rails.root.join('public/static/cwb/en')
@@ -17,16 +19,35 @@ class RootController < ApplicationController
   end
 
   def download
-    require 'rdf/rdfxml'
     @writer = RDF::Writer.for(:rdfxml).buffer do |write|
       query = CWB.sparql.construct([:s, :p, :o]).where([:s, :p, :o])
       query = query.from(RDF::URI(params[:project_id])) if params[:project_id]
-      write << query.result
+      @stuff = write << query.result
     end
 
-    send_data @writer,
-              filename: 'pim.rdf',
-              type: 'application/rdf+xml',
-              disposition: 'attachment'
+    if params[:choice] == 'rdfxml'
+
+      send_data @writer,
+                filename: 'pim.rdf',
+                type: 'application/rdf+xml',
+                disposition: 'attachment'
+      
+    elsif params[:choice] == 'n3'
+      @writer = RDF::NTriples::Writer.buffer do |writer|
+        writer.write_graph(@stuff.graph)
+      end
+
+      send_data @writer,
+                filename: 'pim.n3',
+                type: 'application/n-triples',
+                disposition: 'attachment'
+    end
+  end
+
+  private
+
+  def root_params
+    params.require(:root)
+      .permit(:choice) 
   end
 end

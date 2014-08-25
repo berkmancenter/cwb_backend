@@ -9,6 +9,7 @@ gem 'iconv'
 
 gem 'rdf'
 gem 'rdf-rdfxml'
+gem 'rdf-n3'
 gem 'sparql-client'
 
 gem 'uuidtools'
