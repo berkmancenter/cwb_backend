@@ -4,7 +4,13 @@ class FoldersController < ApplicationController
   respond_to :json
 
   def index
-    render json: CWB::Folder.nested_all(params[:project_id])
+    folders = CWB::Folder.nested_all(params[:project_id])
+    folders.each do |folder|
+      folder.each do |k,v|
+        folder[k] = nil if v == '_null'
+      end
+    end
+    render json: folders
   end
 
   def show

@@ -88,6 +88,10 @@ class CWB::Resource
     container_array = []
     attrs = {}
 
+    if sparql_solutions == []
+      return []
+    end
+
     sparql_solutions.each do |solution|
       # bindings defined https://github.com/ruby-rdf/rdf/blob/c97373f394d663cd369c1d1943e1124ae9b224fa/lib/rdf/query/solutions.rb#L97
       solution.bindings.each do |k,v|

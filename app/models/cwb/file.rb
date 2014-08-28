@@ -1,18 +1,18 @@
 module CWB
   class File < CWB::Resource
     def self.graph_pattern(
-                            project_uri=nil,uri=nil,name=nil,path=nil,
-                            is_part_of=nil,created=nil,size=nil,project=nil,type=nil
+                            _project=nil,uri=nil,name=nil,path=nil,
+                            created=nil,size=nil,type=nil,folder=nil,modified=nil
                           )
       [
         [uri||:uri, RDF.type, PIM.File],
-        [uri||:uri, PIM.project, project||:project],
-        [uri||:uri, RDF::DC.isPartOf, is_part_of||:is_part_of],
         [uri||:uri, RDF::DC.title, name||:name],
         [uri||:uri, RDF::DC.source, path||:path],
         [uri||:uri, RDF::DC.created, created||:created],
         [uri||:uri, RDF::DC.extent, size||:size],
-        [uri||:uri, RDF.type, type||:type]
+        [uri||:uri, RDF::FOAF.name, type||:type],
+        [uri||:uri, PIM.colocation, folder||:folder],
+        [uri||:uri, RDF::DC.modified, modified||:modified]
       ]
     end
   end

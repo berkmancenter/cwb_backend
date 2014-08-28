@@ -4,7 +4,15 @@ class FilesController < ApplicationController
   respond_to :json
 
   def index
-    render json: CWB::File.nested_all(params[:project_id])
+   files = CWB::File.nested_all(params[:project_id])
+   
+    files.each do |file|
+      file.each do |k,v|
+        file[k] = v.to_i if k == :size
+      end
+    end
+
+   render json:  files
   end
 
   def show
