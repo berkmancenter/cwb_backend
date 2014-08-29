@@ -23,6 +23,8 @@ gem 'bcrypt'
 gem 'fabrication'
 gem 'ruby-filemagic'
 
+gem 'dotenv-deployment'
+
 group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails'

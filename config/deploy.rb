@@ -13,7 +13,7 @@ set :branch, :develop
 # set :pty, true
 
 set :linked_files, %w{.env}
-set :linked_dirs, %w{log system public/static}
+set :linked_dirs, %w{log system public/static .env}
 
 set :rbenv_ruby, '2.1.2'
 set :rack_env, :production
