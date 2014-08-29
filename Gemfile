@@ -20,3 +20,7 @@ gem 'nokogiri'
 group :test do
   gem 'minitest-spec-rails'
 end
+
+group :development do
+  gem 'capistrano'
+end
