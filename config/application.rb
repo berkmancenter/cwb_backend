@@ -11,6 +11,7 @@ Bundler.require(*Rails.groups)
 module CwbRails
   class Application < Rails::Application
     config.autoload_paths += %W(#{config.root}/lib)
+    config.eager_load_paths += %W(#{config.root}/lib/cwb)
 
     config.generators do |g|
       g.test_framework :rspec,
