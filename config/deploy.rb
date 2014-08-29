@@ -6,13 +6,14 @@ set :repo_url, 'git@git.metabahn.net:client/cwb-rails.git'
 
 set :deploy_to, '/var/apps/cwb'
 set :scm, :git
+set :branch, :develop
 
 # set :format, :pretty
 # set :log_level, :debug
 # set :pty, true
 
 set :linked_files, %w{.env}
-set :linked_dirs, %w{log system}
+set :linked_dirs, %w{log system public/static}
 
 set :rbenv_ruby, '2.1.2'
 set :rack_env, :production
