@@ -34,3 +34,7 @@ group :test do
   gem 'database_cleaner'
   gem 'faker'
 end
+
+group :development do
+  gem 'capistrano'
+end
