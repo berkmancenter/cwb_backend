@@ -12,8 +12,8 @@ set :branch, :develop
 # set :log_level, :debug
 # set :pty, true
 
-set :linked_files, %w{.env}
-set :linked_dirs, %w{log system public/static .env}
+set :linked_files, %w{.env database.yml rdf_database.yml}
+set :linked_dirs, %w{log system public/static}
 
 set :rbenv_ruby, '2.1.2'
 set :rack_env, :production
