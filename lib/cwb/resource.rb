@@ -1,111 +1,109 @@
 class CWB::Resource
-  class << self
-    attr_accessor :client_class
+  def self.all
+    # block being passed gives rails server output showing triples being passed in
+    query = CWB.sparql.select.where(* graph_pattern.each { |f| p f } )
+    sparql_solutions = query.execute
+    array = format_sparql_solution(sparql_solutions)
   end
 
-  def self.client(mode)
-    (@client_class || CWB).sparql(mode)
+  def self.find(uri, container_array = [])
+    uri = RDF::URI(uri)
+    query = CWB.sparql.select.where(* graph_pattern(uri).each).distinct
+    # gives some useful output to rails server log
+    p query
+    sparql_solutions = query.execute
+    hash = format_sparql_solution(sparql_solutions, uri, true)
   end
 
-  ##
-  # @param  [RDF::Value] resource
-  # @return [Array(Array)]
-  def self.graph_pattern(resource = nil)
-    bind_pattern(const_get(:PATTERN), resource)
+  def self.nested_all(scope_uri, container_array = [])
+    scope_uri = RDF::URI(scope_uri)
+    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern.each).distinct
+    # gives some useful output to rails server log
+    p query
+    sparql_solutions = query.execute
+    # pass true to set subquery? boolean
+    array = format_sparql_solution(sparql_solutions, scope_uri, false)
   end
 
-  ##
-  # @param  [RDF::Value] resource
-  # @return [Array(Array)]
-  def self.optional_pattern(resource = nil)
-    bind_pattern((const_get(:OPTIONAL) rescue []), resource)
+  def self.nested_find(uri, scope_uri)
+    uri = RDF::URI(uri)
+    scope_uri = RDF::URI(scope_uri)
+    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern(nil, uri)).distinct
+    # gives some useful output to rails server log
+    p query
+    sparql_solutions = query.execute
+    # pass true to set subquery? boolean
+    hash = format_sparql_solution(sparql_solutions, scope_uri, true)
   end
 
-  ##
-  # @private
-  # @param  [Array(Array)] pattern
-  # @param  [RDF::Value] resource
-  # @return [Array(Array)]
-  def self.bind_pattern(pattern, resource)
-    if !resource
-      pattern
-    else
-      pattern.map do |triple_pattern|
-        triple_pattern.map do |term|
-          term.eql?(:resource) ? resource : term
+  def self.sparql_format(params)
+    # 4store very picky about post data
+    array = graph_pattern(*params)
+    array.each do |a|
+      a.each_with_index do |aa, ind|
+        if aa.is_a? String
+          a[ind] = %Q[\"#{aa}\"]
+        else
+          a[ind] = '<' + aa.to_s + '>'
         end
       end
+      a << '.'
     end
+    t = array.flatten.join('+')
   end
 
-  ##
-  # @yield [resource]
-  # @yieldparam  [CWB::Resource] resource
-  # @yieldreturn [void] ignored
-  def self.each(scope_id = nil, &block)
-    return enum_for(:each, scope_id) unless block_given?
-    graph = scope_id ? RDF::URI(scope_id) : nil
-    self.query(graph).execute.each do |result|
-      block.call(self.from_bindings(result))
-    end
+  def self.create(params)
+    triples = sparql_format(params)
+    graph = '<' + params[0].to_s + '>'
+    uri = URI.parse('http://localhost:8890/update/')
+    http = Net::HTTP.new(uri.host, uri.port)
+    postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = postdata
+    response = http.request(request)
   end
 
-  ##
-  # @param  [RDF::URI] id
-  # @return [CWB::Resource] or `nil`
-  def self.find(id, scope_id = nil)
-    id = RDF::URI(id)
-    query = CWB.sparql.select
-    query = query.from(RDF::URI(scope_id)) if scope_id
-    query = query.where(*self.graph_pattern(id)).optional(*self.optional_pattern(id))
-    if (results = query.execute).empty?
-      nil # not found
-    else
-      self.new(id, results.first)
-    end
+  def self.delete(id, scope_id=nil)
+    uri = URI.parse('http://localhost:8890/update/')
+    http = Net::HTTP.new(uri.host, uri.port)
+    # deleteing specific triples may be impossible with 4store
+    # if scope_id 
+    #   request = Net::HTTP::Post.new(scp)
+    #   request.add_field('Content-Type', 'application/sparql-query')
+    #   request.body = %Q^ update=DELETE DATA { <#{id}> "p" "s" .  }^
+    #   response = http.request(request)
+    request = Net::HTTP::Delete.new(id)
+    response = http.request(request)
   end
 
-  ##
-  # @param  [RDF::URI] graph
-  # @param  [Hash] options
-  # @return [SPARQL::Client::Query]
-  def self.query(graph = nil, options = {})
-    query = CWB.sparql.select
-    query = query.distinct if options[:distinct]
-    query = query.graph(graph || :graph)
-    query = query.where(*self.graph_pattern)
-    query = query.optional(*self.optional_pattern)
-    query
+  def self.update(params)
+    graph = params[0].to_s
+    endpoint = CWB.endpoint
+
+    delete(graph)
+    create(params)
   end
 
-  ##
-  # @private
-  # @param  [RDF::Query::Solution] bindings
-  # @return [CWB::Resource]
-  def self.from_bindings(bindings)
+  def self.format_sparql_solution(sparql_solutions, uri = nil, is_subquery = false)
+    container_array = []
     attrs = {}
-    bindings.each_binding do |name, value|
-      attrs[name] = value unless name.eql?(:resource)
+
+    if sparql_solutions == []
+      return []
     end
-    self.new(bindings.resource, attrs)
-  end
 
-  def initialize(id, attrs = {})
-    @id = id
-    attrs.each do |k, v|
-      instance_variable_set("@#{k}", v)
+    sparql_solutions.each do |solution|
+      # bindings defined https://github.com/ruby-rdf/rdf/blob/c97373f394d663cd369c1d1943e1124ae9b224fa/lib/rdf/query/solutions.rb#L97
+      solution.bindings.each do |k,v|
+        k == :uri ? k = :id : k
+        hash = Hash[k, v.to_s]
+        attrs.merge!(hash)
+      end
+      return attrs if is_subquery
+      container_array << attrs
+      attrs = {}
     end
-  end
-
-  def [](attr_name)
-    instance_variable_get("@#{attr_name}")
-  end
-
-  def destroy!
-    CWB.sparql(:update).clear_graph(@id)
-  end
-
-  def to_hash
-    {:id => @id.to_s}
+    # .find needs one hash (attrs) .each needs an array (cont_array)
+    container_array.empty? ? attrs : container_array
   end
 end

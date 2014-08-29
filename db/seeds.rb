@@ -1,7 +1,6 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
+puts 'creating five accounts'
+5.times { Fabricate(:account) }
+puts 'Creating account with know credentials...'
+puts "  name: 'mb' with password: 'mb'"
+known_account = CWB::Account.new(name: 'mb', email: 'mb@test.com', password: 'mb')
+known_account.save

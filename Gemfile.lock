@@ -28,32 +28,69 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     arel (5.0.1.20140414130214)
+    bcrypt (3.1.7)
     builder (3.2.2)
     capistrano (3.2.1)
       i18n
       rake (>= 10.0.0)
       sshkit (~> 1.3)
+    capistrano-bundler (1.1.3)
+      capistrano (~> 3.1)
+      sshkit (~> 1.2)
+    capistrano-rbenv (2.0.2)
+      capistrano (~> 3.1)
+      sshkit (~> 1.3)
+    celluloid (0.15.2)
+      timers (~> 1.1.0)
+    coderay (1.1.0)
     colorize (0.7.3)
     daemons (1.1.9)
+    database_cleaner (1.3.0)
+    diff-lcs (1.2.5)
+    dotenv-deployment (0.0.2)
     erubis (2.7.0)
     eventmachine (1.0.3)
+    fabrication (2.8.1)
+    factory_girl (4.4.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.4.1)
+      factory_girl (~> 4.4.0)
+      railties (>= 3.0.0)
+    faker (1.4.2)
+      i18n (~> 0.5)
+    ffi (1.9.3)
+    formatador (0.2.5)
+    guard (2.6.1)
+      formatador (>= 0.2.4)
+      listen (~> 2.7)
+      lumberjack (~> 1.0)
+      pry (>= 0.9.12)
+      thor (>= 0.18.1)
+    guard-rails (0.5.3)
+      guard (~> 2.0)
     haml (4.0.5)
       tilt
     hike (1.2.3)
     htmlentities (4.3.2)
     i18n (0.6.9)
     iconv (1.0.4)
+    interactive_editor (0.0.10)
+      spoon (>= 0.0.1)
     json (1.8.1)
+    listen (2.7.9)
+      celluloid (>= 0.15.2)
+      rb-fsevent (>= 0.9.3)
+      rb-inotify (>= 0.9)
+    lumberjack (1.0.9)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.6.0)
     minitest (5.3.5)
-    minitest-spec-rails (5.0.4)
-      minitest (~> 5.0)
-      rails (~> 4.1.0.rc2)
     multi_json (1.10.1)
+    mysql2 (0.3.16)
     net-http-persistent (1.9)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
@@ -61,6 +98,10 @@ GEM
     nokogiri (1.6.2.1)
       mini_portile (= 0.6.0)
     polyglot (0.3.5)
+    pry (0.10.0)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -80,7 +121,12 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.3.2)
+    rb-fsevent (0.9.4)
+    rb-inotify (0.9.5)
+      ffi (>= 0.5.0)
     rdf (1.1.4.1)
+    rdf-n3 (1.1.1)
+      rdf (~> 1.1, >= 1.1.4)
     rdf-rdfa (1.1.3.2)
       haml (~> 4.0)
       htmlentities (~> 4.3)
@@ -92,9 +138,29 @@ GEM
       rdf-xsd (~> 1.1)
     rdf-xsd (1.1.1)
       rdf (~> 1.1)
+    rspec-core (3.0.3)
+      rspec-support (~> 3.0.0)
+    rspec-expectations (3.0.3)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.0.0)
+    rspec-mocks (3.0.3)
+      rspec-support (~> 3.0.0)
+    rspec-rails (3.0.2)
+      actionpack (>= 3.0)
+      activesupport (>= 3.0)
+      railties (>= 3.0)
+      rspec-core (~> 3.0.0)
+      rspec-expectations (~> 3.0.0)
+      rspec-mocks (~> 3.0.0)
+      rspec-support (~> 3.0.0)
+    rspec-support (3.0.3)
+    ruby-filemagic (0.6.1)
+    slop (3.6.0)
     sparql-client (1.1.2)
       net-http-persistent (~> 1.4)
       rdf (~> 1.1)
+    spoon (0.0.4)
+      ffi
     sprockets (2.11.0)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -115,6 +181,7 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.4)
     tilt (1.4.1)
+    timers (1.1.0)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -126,14 +193,27 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt
   capistrano
+  capistrano-bundler
+  capistrano-rbenv
+  database_cleaner
+  dotenv-deployment
+  fabrication
+  factory_girl_rails
+  faker
+  guard-rails
   iconv
+  interactive_editor
   json
-  minitest-spec-rails
+  mysql2
   nokogiri
   rails (= 4.1.2)
   rdf
+  rdf-n3
   rdf-rdfxml
+  rspec-rails
+  ruby-filemagic
   sparql-client
   thin
   uuidtools

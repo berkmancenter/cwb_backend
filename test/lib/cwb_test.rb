@@ -1,6 +1,8 @@
 require 'test_helper'
+require 'cwb'
 
 describe "CWB" do
+
   it "has a frozen uri" do
     assert CWB::BASE_URI.frozen?
   end

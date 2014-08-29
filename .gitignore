@@ -10,8 +10,24 @@
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
+/config/database.yml
+/config/rdf_database.yml
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
 public/static
+*.orig
+
+# Ignore vim temp and backup files
+*~
+*.swp
+*.swo
+
+# Ignore added projects store as .nt
+# (mime for N-triples 'http://en.wikipedia.org/wiki/N-Triples') 
+*.nt
+
+# RubyMine
+.idea
+

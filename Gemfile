@@ -9,6 +9,7 @@ gem 'iconv'
 
 gem 'rdf'
 gem 'rdf-rdfxml'
+gem 'rdf-n3'
 gem 'sparql-client'
 
 gem 'uuidtools'
@@ -17,10 +18,27 @@ gem 'thin'
 
 gem 'nokogiri'
 
+gem 'mysql2'
+gem 'bcrypt'
+gem 'fabrication'
+gem 'ruby-filemagic'
+
+gem 'dotenv-deployment'
+
+group :development, :test do
+  gem 'factory_girl_rails'
+  gem 'rspec-rails'
+  gem 'guard-rails'
+  gem 'interactive_editor'
+end
+
 group :test do
-  gem 'minitest-spec-rails'
+  gem 'database_cleaner'
+  gem 'faker'
 end
 
 group :development do
   gem 'capistrano'
+  gem 'capistrano-rbenv'
+  gem 'capistrano-bundler'
 end
