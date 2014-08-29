@@ -2,6 +2,27 @@ require 'cwb'
 require 'digest/sha1' # for Digest::SHA1.hexdigest
 
 namespace :account do
+  desc "seed accounts"
+  task :seed => :environment do
+    # puts 'Creating accounts with known credentials...'
+    [
+      {
+        name: "mb",
+        password: "mb",
+        email: "ryan@metabahn"
+      },
+      {
+        name: "cwb",
+        password: "cwb",
+        email: "jjubinville@cyber.law.harvard.edu"
+      }
+    ].each {|args|
+      # puts "name: '#{args[:name]}' with password: '#{args[:password]}'"
+      account = CWB::Account.new(name: args[:name], email: args[:email], password: args[:password])
+      account.save
+    }
+  end
+
   desc "List accounts."
   task :list => :environment do
     pattern = [
