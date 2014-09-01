@@ -42,7 +42,7 @@ module CWB
             params = [project,uri,name,rel_path.to_s,parent]
             CWB::Folder.create(params)
           elsif ::File.ftype(path) == 'file'
-            folder = 'file:/'  + rel_path.to_s
+            folder = 'file:/'  + rel_path.parent.to_s
             created = ::File.ctime(path.to_s).to_datetime.to_s
             size = ::File.size(path.to_s).to_s
             type = FileMagic.new.file(path.to_s)
