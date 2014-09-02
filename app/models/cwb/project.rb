@@ -45,7 +45,7 @@ module CWB
             folder = 'file:/'  + ::File.basename(::File.expand_path("..", path.to_s)).to_s
             created = ::File.ctime(path.to_s).to_datetime.to_s
             size = ::File.size(path.to_s).to_s
-            type = FileMagic.new.file(path.to_s)
+            type = FileMagic.new.file(path.to_s).to_s.split(',')[0]
             modified = ::File.mtime(path.to_s).to_datetime.to_s
 
             params = [project,uri,name,rel_path.to_s,created,size,type,folder,modified]
