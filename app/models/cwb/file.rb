@@ -17,6 +17,17 @@ module CWB
       ]
     end
 
+    def self.unmark_starred(file_id, project_id)
+      project = RDF::URI(project_id)
+      uri = RDF::URI(file_id)
+
+      del_params = [project, uri, PIM.isStarred, 'true']
+      create_params = [project, uri, PIM.isStarred, 'false']
+
+      single_delete(del_params)
+      single_create(create_params)
+    end
+
     def self.mark_starred(file_id, project_id)
       project = RDF::URI(project_id)
       uri = RDF::URI(file_id)

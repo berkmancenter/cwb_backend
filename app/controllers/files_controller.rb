@@ -38,4 +38,16 @@ class FilesController < ApplicationController
 
     render json: resource
   end
+
+  def unmark_starred
+    star = CWB::File.unmark_starred(params[:id], params[:project_id])
+    resource =
+      if star.nil?
+        { error: 'Failed to mark as important.', status: :not_found }
+      else
+        star
+      end
+
+    render json: resource
+  end
 end
