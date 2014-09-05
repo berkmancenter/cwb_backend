@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     resources :folders,    id: /[^\/]*/
     resources :files, except: :destroy,     id: /[^\/]*/
     post '/files/:id', to: 'files#destroy', id: /[^\/]*/
+    get '/star_file/:id', to: 'files#mark_starred', id: /[^\/]*/
   end
 
   resources :vocabularies, vocabulary_id: /[^\/]*/
