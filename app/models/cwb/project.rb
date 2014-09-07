@@ -37,15 +37,15 @@ module CWB
           next if rel_path.basename.to_s == 'Thumbs.db' # ignore Windows artifacts
 
           if ::File.ftype(path) == 'directory' && path.parent.to_s != '.'
-            parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
+            parent = is_toplevel ? '_null' : rel_path.parent.to_s
 
             params = [project,uri,name,rel_path.to_s,parent]
             CWB::Folder.create(params)
           elsif ::File.ftype(path) == 'file'
-            folder = 'file:/'  + rel_path.parent.to_s
+            folder = 'file:/'  + ::File.basename(::File.expand_path("..", path.to_s)).to_s
             created = ::File.ctime(path.to_s).to_datetime.to_s
             size = ::File.size(path.to_s).to_s
-            type = FileMagic.new.file(path.to_s)
+            type = FileMagic.new.file(path.to_s).to_s.split(',')[0]
             modified = ::File.mtime(path.to_s).to_datetime.to_s
 
             params = [project,uri,name,rel_path.to_s,created,size,type,folder,modified]

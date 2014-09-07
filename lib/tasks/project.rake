@@ -1,7 +1,6 @@
 require 'cwb'
 require 'date' # for DateTime
 require 'find' # for Find.find
-require 'pry'
 
 namespace :project do
   desc "List projects in the database."
@@ -131,4 +130,3 @@ namespace :project do
     puts "Removed the project '#{project_name}'."
   end
 end
-
