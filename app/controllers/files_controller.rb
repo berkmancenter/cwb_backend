@@ -27,47 +27,27 @@ class FilesController < ApplicationController
     render json: resource
   end
 
-  # def create
-  #   scope_uri = params[:id]
-  #   uri =  CWB::Resource.unique_uri
-  #   project = params[:id]
-  #   colocation = file_params[:colocation]
-  #   name = file_params[:name]
-  #   path = file_params[:path]
-  #   created = file_params[:created]
-  #   size = file_params[:size]
+  def mark_starred
+    star = CWB::File.mark_starred(params[:id], params[:project_id])
+    resource =
+      if star.nil?
+        { error: 'Failed to mark as important.', status: :not_found }
+      else
+        star
+      end
 
-  #   params_array = 
-  #     [
-  #       scope_uri, uri, project, colocation,
-  #       name, path, created, size
-  #     ]
+    render json: resource
+  end
 
-  #   CWB::File.create(params_array)
+  def unmark_starred
+    star = CWB::File.unmark_starred(params[:id], params[:project_id])
+    resource =
+      if star.nil?
+        { error: 'Failed to mark as important.', status: :not_found }
+      else
+        star
+      end
 
-  #   render json: {
-  #     id: uri,
-  #     project: params[:id],
-  #     colocation: colocation,
-  #     name: name,
-  #     path: path,
-  #     created: created,
-  #     size: size
-  #   }
-  # end
-
-  # def destroy
-  #   uri = RDF::URI(params[:id])
-  #   # CWB::File.delete(params[:id], params[:project_id])
-  #   CWB.sparql(:update).delete_data( [[ uri, RDF.type, PIM.File]])
-  #   render json: { id: params[:id] }
-  # end
-
-
-  private
-
-  def file_params
-    params.require(:file)
-      .permit(:colocation, :name, :path, :created, :size) 
+    render json: resource
   end
 end
