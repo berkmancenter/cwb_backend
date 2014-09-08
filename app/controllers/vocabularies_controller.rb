@@ -4,7 +4,7 @@ class VocabulariesController < ApplicationController
   respond_to :json
 
   def index
-    render json: CWB::Vocabulary.each(params[:vocabulary_id])
+    render json: CWB::Vocabulary.nested_all(params[:project_id])
   end
 
   def show

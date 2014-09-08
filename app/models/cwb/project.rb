@@ -19,6 +19,23 @@ module CWB
       project_dir = params[3]
       project = params[0]
 
+      # vocab init
+      CWB::Vocabulary.fixtures.each do |fix|
+        fix.each do |key,val|
+         if key == :id
+          @label = val.gsub(' ', '') 
+         end
+        end
+
+        voc_params = [project, RDF::URI("#{@label}")]
+
+        fix.each_value do |value|
+          voc_params << value
+        end
+
+        CWB::Vocabulary.turtle_create(voc_params)
+      end
+
       if ::File.directory?(project_dir)
         CWB::Project.create(params)
 

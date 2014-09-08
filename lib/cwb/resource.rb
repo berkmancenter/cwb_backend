@@ -14,7 +14,7 @@ class CWB::Resource
 
   def self.nested_all(scope_uri, container_array = [])
     scope_uri = RDF::URI(scope_uri)
-    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern.each).distinct
+    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern.each)
     sparql_solutions = query.execute
     # pass true to set subquery? boolean
     array = format_sparql_solution(sparql_solutions, scope_uri, false)
@@ -25,7 +25,6 @@ class CWB::Resource
     scope_uri = RDF::URI(scope_uri)
     query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern(nil, uri)).distinct
     # gives some useful output to rails server log
-    p query
     sparql_solutions = query.execute
     # pass true to set subquery? boolean
     hash = format_sparql_solution(sparql_solutions, scope_uri, true)
@@ -37,7 +36,7 @@ class CWB::Resource
     array.each do |a|
       a.each_with_index do |aa, ind|
         if aa.is_a? String
-          a[ind] = %Q[\"#{aa}\"]
+          a[ind] = "'#{aa}'"
         else
           a[ind] = '<' + aa.to_s + '>'
         end
@@ -50,7 +49,7 @@ class CWB::Resource
   def self.create(params)
     triples = sparql_format(params)
     graph = '<' + params[0].to_s + '>'
-    uri = URI.parse('http://localhost:8890/update/')
+    uri = URI.parse("http://localhost:8890/update/")
     http = Net::HTTP.new(uri.host, uri.port)
     postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
     request = Net::HTTP::Post.new(uri.request_uri)
@@ -58,15 +57,20 @@ class CWB::Resource
     response = http.request(request)
   end
 
+  def self.turtle_create(params)
+    triples = sparql_format(params)
+    triples.split('+.').each do |split|
+      split = split + '+.'
+      split.gsub!('+', ' ')
+      split[0] = '' if split[0] == ' '
+      Net::HTTP::post_form URI('http://localhost:8890/data/'), 
+        { "data" => "#{split}", "graph" => "#{params[0]}", "mime-type" => "application/x-turtle" }
+    end
+  end
+
   def self.delete(id, scope_id=nil)
     uri = URI.parse('http://localhost:8890/update/')
     http = Net::HTTP.new(uri.host, uri.port)
-    # deleteing specific triples may be impossible with 4store
-    # if scope_id 
-    #   request = Net::HTTP::Post.new(scp)
-    #   request.add_field('Content-Type', 'application/sparql-query')
-    #   request.body = %Q^ update=DELETE DATA { <#{id}> "p" "s" .  }^
-    #   response = http.request(request)
     request = Net::HTTP::Delete.new(id)
     response = http.request(request)
   end
