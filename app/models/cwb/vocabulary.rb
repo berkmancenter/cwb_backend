@@ -11,10 +11,10 @@ module CWB
     def self.fixtures
       [
         { id: "Format", description: "null" },
-        { id: "Document Type", description: "null" },
+        { id: "DocumentType", description: "null" },
         { id: "Zone", description: "Physical area of the building represented." },
         { id: "Phase", description: "Temporal section of project activities this file belongs to." },
-        { id: "Architectural Discipline", description: "Area of technical specialty to which this resource belongs." },
+        { id: "ArchitecturalDiscipline", description: "Area of technical specialty to which this resource belongs." },
         { id: "Rights", description: "Access control policy, documents read access and/or embargo." }
       ]
     end

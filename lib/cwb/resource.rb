@@ -12,9 +12,10 @@ class CWB::Resource
     hash = format_sparql_solution(sparql_solutions, uri, true)
   end
 
-  def self.nested_all(scope_uri, container_array = [])
+  def self.nested_all(scope_uri, vocab_uri=nil, container_array = [])
+    vocab_uri = RDF::URI("#{vocab_uri}") if vocab_uri
     scope_uri = RDF::URI(scope_uri)
-    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern.each)
+    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern(scope_uri,nil,nil,vocab_uri)).distinct
     sparql_solutions = query.execute
     # pass true to set subquery? boolean
     array = format_sparql_solution(sparql_solutions, scope_uri, false)
@@ -32,6 +33,7 @@ class CWB::Resource
 
   def self.sparql_format(params)
     # 4store very picky about post data
+    
     array = graph_pattern(*params)
     array.each do |a|
       a.each_with_index do |aa, ind|

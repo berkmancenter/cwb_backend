@@ -8,6 +8,6 @@ class VocabulariesController < ApplicationController
   end
 
   def show
-    render json: RDF::Vocabulary('http://libraries.mit.edu/ontologies/pim/pim1.0#')
+    render json: CWB::Vocabulary.nested_find(params[:id], params[:project_id])
   end
 end

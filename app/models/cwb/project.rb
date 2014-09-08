@@ -23,7 +23,7 @@ module CWB
       CWB::Vocabulary.fixtures.each do |fix|
         fix.each do |key,val|
          if key == :id
-          @label = val.gsub(' ', '') 
+          @label = val
          end
         end
 
@@ -34,6 +34,25 @@ module CWB
         end
 
         CWB::Vocabulary.turtle_create(voc_params)
+      end
+
+      # term init
+      CWB::Term.fixtures.each do |fix|
+        fix.each do |key,val|
+          if key == :id
+            @label = val
+          # elsif key == :vocabulary
+          #   val = RDF::URI(val)
+          end
+        end
+
+        voc_params = [project, RDF::URI("#{@label}")]
+
+        fix.each_value do |value|
+          voc_params << value
+        end
+
+        CWB::Term.turtle_create(voc_params)
       end
 
       if ::File.directory?(project_dir)
