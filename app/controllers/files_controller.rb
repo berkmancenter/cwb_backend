@@ -50,4 +50,20 @@ class FilesController < ApplicationController
 
     render json: resource
   end
+
+  def mark_starred_multiple
+    params[:ids].each {|id|
+      CWB::File.mark_starred(id, params[:project_id])
+    }
+
+    render json: { success: 'Successfully starred files' }
+  end
+
+  def unmark_starred_multiple
+    params[:ids].each {|id|
+      CWB::File.unmark_starred(id, params[:project_id])
+    }
+
+    render json: { success: 'Successfully unstarred files' }
+  end
 end
