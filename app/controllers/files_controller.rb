@@ -52,7 +52,7 @@ class FilesController < ApplicationController
   end
 
   def mark_starred_multiple
-    params[:ids].each {|id|
+    file_params[:ids].each {|id|
       CWB::File.mark_starred(id, params[:project_id])
     }
 
@@ -60,10 +60,16 @@ class FilesController < ApplicationController
   end
 
   def unmark_starred_multiple
-    params[:ids].each {|id|
+    file_params[:ids].each {|id|
       CWB::File.unmark_starred(id, params[:project_id])
     }
 
     render json: { success: 'Successfully unstarred files' }
+  end
+
+  private
+
+  def file_params
+    params.require(:file).permit(:ids=>[])
   end
 end
