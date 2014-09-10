@@ -41,8 +41,6 @@ module CWB
         fix.each do |key,val|
           if key == :id
             @label = val
-          # elsif key == :vocabulary
-          #   val = RDF::URI(val)
           end
         end
 

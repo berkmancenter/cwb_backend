@@ -14,4 +14,33 @@ class TermsController < ApplicationController
       render json: resource
     end
   end
+
+  def create
+    uri = RDF::URI('http://facade.mit.edu/dataset/' + term_params[:label])
+    project = RDF::URI(params[:project_id])
+    vocab = RDF::URI(params[:vocabulary_id])
+    label = term_params[:label]
+    desc = term_params[:description]
+
+    params = [project, uri, label, vocab, desc]
+
+    if !(resource = CWB::Term.turtle_create(params))
+    #def self.graph_pattern(_project=nil,uri=nil,label=nil,vocab=nil,description=nil)
+      render json: {}, status: 404
+    else
+      render json: resource
+    end
+  end
+
+  def update
+  end
+
+  def destroy
+  end
+
+  private
+
+  def term_params
+    params.require(:term).permit(:label, :description)
+  end
 end
