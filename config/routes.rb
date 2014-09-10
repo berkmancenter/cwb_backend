@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     post '/files/:id', to: 'files#destroy', id: /[^\/]*/
     put '/star_file/:id', to: 'files#mark_starred', id: /[^\/]*/
     put '/unstar_file/:id', to: 'files#unmark_starred', id: /[^\/]*/
+    put '/star_files', to: 'files#mark_starred_multiple'
+    put '/unstar_files', to: 'files#unmark_starred_multiple'
   end
 
 end
