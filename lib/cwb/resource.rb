@@ -70,6 +70,18 @@ class CWB::Resource
     end
   end
 
+  def self.single_delete(params)
+    graph = '<' + params[0].to_s + '>'
+    triples = sparql_format_single(params)
+    uri = URI.parse('http://localhost:8890/update/')
+    http = Net::HTTP.new(uri.host, uri.port)
+    postdata = %Q[update=DELETE+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = postdata
+    response = http.request(request)
+  end
+
+
   def self.delete(id, scope_id=nil)
     uri = URI.parse('http://localhost:8890/update/')
     http = Net::HTTP.new(uri.host, uri.port)
