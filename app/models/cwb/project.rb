@@ -40,7 +40,7 @@ module CWB
       CWB::Term.fixtures.each do |fix|
         fix.each do |key,val|
           if key == :id
-            @label = val
+            @label = val + UUIDTools::UUID.timestamp_create
           end
         end
 

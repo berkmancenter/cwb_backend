@@ -50,10 +50,10 @@ class CWB::Resource
 
   def self.create(params)
     triples = sparql_format(params)
-    graph = '<' + params[0].to_s + '>'
+    project_uri = '<' + params[0].to_s + '>'
     uri = URI.parse("http://localhost:8890/update/")
     http = Net::HTTP.new(uri.host, uri.port)
-    postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
+    postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
     request = Net::HTTP::Post.new(uri.request_uri)
     request.body = postdata
     response = http.request(request)
@@ -71,16 +71,34 @@ class CWB::Resource
   end
 
   def self.single_delete(params)
-    graph = '<' + params[0].to_s + '>'
-    triples = sparql_format_single(params)
+    project_uri = '<' + params[0].to_s + '>'
     uri = URI.parse('http://localhost:8890/update/')
     http = Net::HTTP.new(uri.host, uri.port)
-    postdata = %Q[update=DELETE+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
-    request = Net::HTTP::Post.new(uri.request_uri)
-    request.body = postdata
-    response = http.request(request)
+    triples = sparql_format(params)
+    triples.split('+.').each do |split|
+      split = split + '+.'
+      split.gsub!('+', ' ')
+      split[0] = '' if split[0] == ' '
+      postdata = %Q[update=DELETE+DATA+{+GRAPH+#{ project_uri }+{+#{ split }+}+}]
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request.body = postdata
+      response = http.request(request)
+    end
   end
 
+  def self.sparql_format_single(params)
+    # 4store very picky about post data
+    params.shift
+    params.each_with_index do |a, i|
+      if a.is_a? String
+        params[i] = %Q[\"#{a}\"]
+      else
+        params[i] = '<' + a.to_s + '>'
+      end
+    end
+    params << '.'
+    t = params.flatten.join('+')
+  end
 
   def self.delete(id, scope_id=nil)
     uri = URI.parse('http://localhost:8890/update/')
@@ -90,10 +108,10 @@ class CWB::Resource
   end
 
   def self.update(params)
-    graph = params[0].to_s
+    project_uri = params[0].to_s
     endpoint = CWB.endpoint
 
-    delete(graph)
+    delete(project_uri)
     create(params)
   end
 

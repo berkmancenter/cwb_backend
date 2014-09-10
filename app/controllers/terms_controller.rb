@@ -16,10 +16,10 @@ class TermsController < ApplicationController
   end
 
   def create
-    uri = RDF::URI('http://facade.mit.edu/dataset/' + term_params[:label])
+    label = term_params[:label] 
+    uri = RDF::URI('http://facade.mit.edu/dataset/' + label + UUIDTools::UUID.timestamp_create)
     project = RDF::URI(params[:project_id])
     vocab = RDF::URI(params[:vocabulary_id])
-    label = term_params[:label]
     desc = term_params[:description]
 
     params = [project, uri, label, vocab, desc]
@@ -33,9 +33,47 @@ class TermsController < ApplicationController
   end
 
   def update
+    resource = CWB::Term.nested_find(params[:id], params[:project_id])
+    uri = RDF::URI(params[:id])
+    project = params[:project_id]
+    vocab = RDF::URI(params[:vocabulary_id])
+    label = resource[:label]
+    desc = resource[:description]
+    del_params = [project, uri, label, vocab, desc]
+    CWB::Term.single_delete(del_params)
+    
+    label = term_params[:label]
+    uri = RDF::URI('http://facade.mit.edu/dataset/' + label + UUIDTools::UUID.timestamp_create)
+    project = RDF::URI(params[:project_id])
+    vocab = RDF::URI(params[:vocabulary_id])
+    desc = term_params[:description]
+
+    params = [project, uri, label, vocab, desc]
+
+    if !(resource = CWB::Term.turtle_create(params))
+    #def self.graph_pattern(_project=nil,uri=nil,label=nil,vocab=nil,description=nil)
+      render json: {}, status: 404
+    else
+      render json: resource
+    end
   end
 
   def destroy
+    resource = CWB::Term.nested_find(params[:id], params[:project_id])
+
+    uri = RDF::URI(params[:id])
+    project = params[:project_id]
+    vocab = RDF::URI(params[:vocabulary_id])
+    label = resource[:label]
+    desc = resource[:description]
+
+    params = [project, uri, label, vocab, desc]
+
+    if !(resource = CWB::Term.single_delete(params))
+      render json: {}, status: 404
+    else
+      render json: resource
+    end
   end
 
   private
