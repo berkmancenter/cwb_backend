@@ -74,16 +74,22 @@ class CWB::Resource
     project_uri = '<' + params[0].to_s + '>'
     uri = URI.parse('http://localhost:8890/update/')
     http = Net::HTTP.new(uri.host, uri.port)
-    triples = sparql_format(params)
-    triples.split('+.').each do |split|
-      split = split + '+.'
-      split.gsub!('+', ' ')
-      split[0] = '' if split[0] == ' '
-      postdata = %Q[update=DELETE+DATA+{+GRAPH+#{ project_uri }+{+#{ split }+}+}]
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request.body = postdata
-      response = http.request(request)
-    end
+    triples = sparql_format_single(params)
+    postdata = %Q[update=DELETE+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = postdata
+    response = http.request(request)
+  end
+
+  def self.single_create(params)
+    graph = '<' + params[0].to_s + '>'
+    triples = sparql_format_single(params)
+    uri = URI.parse('http://localhost:8890/update/')
+    http = Net::HTTP.new(uri.host, uri.port)
+    postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = postdata
+    response = http.request(request)
   end
 
   def self.sparql_format_single(params)
@@ -127,7 +133,11 @@ class CWB::Resource
       # bindings defined https://github.com/ruby-rdf/rdf/blob/c97373f394d663cd369c1d1943e1124ae9b224fa/lib/rdf/query/solutions.rb#L97
       solution.bindings.each do |k,v|
         k == :uri ? k = :id : k
-        hash = Hash[k, v.to_s]
+        if v.to_s =~ /__/ && k == :label
+          hash = Hash[k, v.to_s.gsub!(/__/, ' ')]
+        else
+          hash = Hash[k, v.to_s]
+        end
         attrs.merge!(hash)
       end
       return attrs if is_subquery
@@ -135,6 +145,10 @@ class CWB::Resource
       attrs = {}
     end
     # .find needs one hash (attrs) .each needs an array (cont_array)
-    container_array.empty? ? attrs : container_array
+    if container_array.empty?
+      attrs
+    else
+      container_array.sort_by! { |i| i[:label].downcase if i[:label] }
+    end
   end
 end

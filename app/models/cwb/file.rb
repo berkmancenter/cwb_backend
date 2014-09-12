@@ -38,16 +38,5 @@ module CWB
       single_delete(del_params)
       single_create(create_params)
     end
-
-    def self.single_create(params)
-      graph = '<' + params[0].to_s + '>'
-      triples = sparql_format_single(params)
-      uri = URI.parse('http://localhost:8890/update/')
-      http = Net::HTTP.new(uri.host, uri.port)
-      postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request.body = postdata
-      response = http.request(request)
-    end
   end
 end
