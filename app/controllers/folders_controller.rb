@@ -6,6 +6,7 @@ class FoldersController < ApplicationController
   def index
     folders = CWB::Folder.nested_all(params[:project_id])
     folders.each do |folder|
+      folder[:project] = params[:project_id]
       folder.each do |k,v|
         folder[k] = nil if v == '_null'
       end
