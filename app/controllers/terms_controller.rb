@@ -16,7 +16,7 @@ class TermsController < ApplicationController
   end
 
   def create
-    label = term_params[:label] 
+    label = term_params[:label].gsub(' ', '__')
     uri = RDF::URI('http://facade.mit.edu/dataset/' + label + UUIDTools::UUID.timestamp_create)
     project = RDF::URI(params[:project_id])
     vocab = RDF::URI(params[:vocabulary_id])
@@ -42,7 +42,7 @@ class TermsController < ApplicationController
     del_params = [project, uri, label, vocab, desc]
     CWB::Term.single_delete(del_params)
     
-    label = term_params[:label]
+    label = term_params[:label].gsub(' ', '__')
     uri = RDF::URI('http://facade.mit.edu/dataset/' + label + UUIDTools::UUID.timestamp_create)
     project = RDF::URI(params[:project_id])
     vocab = RDF::URI(params[:vocabulary_id])
