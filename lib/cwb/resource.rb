@@ -158,21 +158,24 @@ class CWB::Resource
       # bindings defined https://github.com/ruby-rdf/rdf/blob/c97373f394d663cd369c1d1943e1124ae9b224fa/lib/rdf/query/solutions.rb#L97
       solution.bindings.each do |k,v|
         if k == :tag && !(v == 'nil')
-          tag_array << v.to_s unless tag_array.include?(v.to_s)
+          tag_array << v.to_s
         end
         k == :uri ? k = :id : k
         hash = Hash[k, v.to_s]
         attrs.merge!(hash)
       end
+      if self == CWB::File
+        attrs[:tag] = tag_array
+        attrs[:tag].uniq!
+      end
       return attrs if subquery && !tagged
-      attrs[:tag] = tag_array
       return attrs if subquery && ((index + 1) == sparql_solutions.count) && tagged
       if !subquery && container_array.empty? 
         container_array << attrs
         tag_array = []
       elsif !subquery
         if container_array.last[:id] == attrs[:id]
-          container_array.last[:tag] << attrs[:tag].first unless attrs[:tag].empty?
+          container_array.last[:tag] << attrs[:tag].first unless attrs[:tag].empty? || container_array.last[:tag].include?(attrs[:tag].first)
         else
           container_array << attrs
         end
