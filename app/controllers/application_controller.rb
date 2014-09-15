@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   respond_to :json
   
   def authed?
+    
     unless @current_user
       render json: { error: 'You must be logged in.' }, status: :unauthorized 
     end

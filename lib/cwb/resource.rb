@@ -161,7 +161,11 @@ class CWB::Resource
           tag_array << v.to_s
         end
         k == :uri ? k = :id : k
-        hash = Hash[k, v.to_s]
+        if v.to_s =~ /__/ && k == :label
+          hash = Hash[k, v.to_s.gsub!(/__/, ' ')]
+        else
+          hash = Hash[k, v.to_s]
+        end
         attrs.merge!(hash)
       end
       if self == CWB::File
@@ -185,6 +189,10 @@ class CWB::Resource
       attrs = {}
     end
     # .find needs one hash (attrs) .each needs an array (cont_array)
-    container_array.empty? ? attrs : container_array
+    if container_array.empty?
+      attrs
+    else
+      container_array.sort_by! { |i| i[:label].downcase if i[:label] }
+    end
   end
 end

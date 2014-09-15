@@ -1,6 +1,6 @@
 class FilesController < ApplicationController
-  # before_action :set_current_user
-  # before_action :authed?
+  before_action :set_current_user
+  before_action :authed?
   respond_to :json
 
   def index
@@ -67,21 +67,6 @@ class FilesController < ApplicationController
     render json: { success: 'Successfully unstarred files' }
   end
 
-  def tag_file
-    file_params[:tags].each {|tag|
-      CWB::File.tag_file(params[:project_id], params[:file_id], tag)
-    }
-
-    render json: { success: 'Successfully starred files' }
-  end
-
-  def untag_file
-    file_params[:tags].each {|tag|
-      CWB::File.untag_file(params[:project_id], params[:file_id], tag)
-    }
-
-    render json: { success: 'Successfully starred files' }
-  end
   private
 
   def file_params

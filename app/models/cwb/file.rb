@@ -11,6 +11,13 @@ module CWB
         [uri||:uri, RDF::DC.created, created||:created],
         [uri||:uri, RDF::DC.extent, size||:size],
         [uri||:uri, RDF::FOAF.name, type||:type],
+      [
+        [uri||:uri, RDF.type, PIM.File],
+        [uri||:uri, RDF::DC.title, name||:name],
+        [uri||:uri, RDF::DC.source, path||:path],
+        [uri||:uri, RDF::DC.created, created||:created],
+        [uri||:uri, RDF::DC.extent, size||:size],
+        [uri||:uri, RDF::FOAF.name, type||:type],
         [uri||:uri, PIM.colocation, folder||:folder],
         [uri||:uri, RDF::DC.modified, modified||:modified],
         [uri||:uri, PIM.isStarred, starred||:starred],
