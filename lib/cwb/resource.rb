@@ -7,28 +7,25 @@ class CWB::Resource
 
   def self.find(uri, container_array = [])
     uri = RDF::URI(uri)
-    query = CWB.sparql.select.where(* graph_pattern(uri).each).distinct
+    query = CWB.sparql.select.where(* graph_pattern(uri).each)
     sparql_solutions = query.execute
     hash = format_sparql_solution(sparql_solutions, uri, true)
   end
 
-  def self.nested_all(scope_uri, vocab_uri=nil, container_array = [])
+  def self.nested_all(scope_uri, vocab_uri=nil, tagged=false, container_array = [])
     vocab_uri = RDF::URI(vocab_uri) if vocab_uri
     scope_uri = RDF::URI(scope_uri)
     query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern(scope_uri,nil,nil,vocab_uri))
     sparql_solutions = query.execute
-    # pass true to set subquery? boolean
-    array = format_sparql_solution(sparql_solutions, scope_uri, false)
+    array = format_sparql_solution(sparql_solutions, scope_uri, subquery=false, tagged)
   end
 
-  def self.nested_find(uri, scope_uri)
+  def self.nested_find(uri, scope_uri, tagged=false)
     uri = RDF::URI(uri)
     scope_uri = RDF::URI(scope_uri)
     query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern(nil, uri))
-    # gives some useful output to rails server log
     sparql_solutions = query.execute
-    # pass true to set subquery? boolean
-    hash = format_sparql_solution(sparql_solutions, scope_uri, true)
+    hash = format_sparql_solution(sparql_solutions, scope_uri, subquery=true, tagged)
   end
 
   def self.sparql_format(params)
@@ -92,11 +89,22 @@ class CWB::Resource
     response = http.request(request)
   end
 
+  def self.single_create(params)
+    project_uri = '<' + params[0].to_s + '>'
+    triples = sparql_format_single(params)
+    uri = URI.parse('http://localhost:8890/update/')
+    http = Net::HTTP.new(uri.host, uri.port)
+    postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = postdata
+    response = http.request(request)
+  end
+
   def self.single_delete(params)
     project_uri = '<' + params[0].to_s + '>'
     uri = URI.parse('http://localhost:8890/update/')
     http = Net::HTTP.new(uri.host, uri.port)
-    triples = sparql_format(params)
+    triples = sparql_format_single(params)
     triples.split('+.').each do |split|
       split = split + '+.'
       split[0] = '' if split[0] == ' '
@@ -137,23 +145,40 @@ class CWB::Resource
     create(params)
   end
 
-  def self.format_sparql_solution(sparql_solutions, uri = nil, is_subquery = false)
+  def self.format_sparql_solution(sparql_solutions, uri = nil, subquery=false,tagged=false)
     container_array = []
     attrs = {}
+    tag_array = []
 
     if sparql_solutions == []
       return []
     end
 
-    sparql_solutions.each do |solution|
+    sparql_solutions.each_with_index do |solution, index|
       # bindings defined https://github.com/ruby-rdf/rdf/blob/c97373f394d663cd369c1d1943e1124ae9b224fa/lib/rdf/query/solutions.rb#L97
       solution.bindings.each do |k,v|
+        if k == :tag && !(v == 'nil')
+          tag_array << v.to_s unless tag_array.include?(v.to_s)
+        end
         k == :uri ? k = :id : k
         hash = Hash[k, v.to_s]
         attrs.merge!(hash)
       end
-      return attrs if is_subquery
-      container_array << attrs
+      return attrs if subquery && !tagged
+      attrs[:tag] = tag_array
+      return attrs if subquery && ((index + 1) == sparql_solutions.count) && tagged
+      if !subquery && container_array.empty? 
+        container_array << attrs
+        tag_array = []
+      elsif !subquery
+        if container_array.last[:id] == attrs[:id]
+          container_array.last[:tag] << attrs[:tag].first unless attrs[:tag].empty?
+        else
+          container_array << attrs
+        end
+        tag_array = []
+      end
+
       attrs = {}
     end
     # .find needs one hash (attrs) .each needs an array (cont_array)
