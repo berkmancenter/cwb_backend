@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   resources :projects,     id: /[^\/]*/ do
     resources :folders,    id: /[^\/]*/
     resources :files, except: :destroy,     id: /[^\/]*/
+    resources :vocabularies, id: /[^\/]*/ do
+      resources :terms,      id: /[^\/]*/
+    end
     post '/files/:id', to: 'files#destroy', id: /[^\/]*/
     put '/star_file/:id', to: 'files#mark_starred', id: /[^\/]*/
     put '/unstar_file/:id', to: 'files#unmark_starred', id: /[^\/]*/
@@ -19,6 +22,4 @@ Rails.application.routes.draw do
     put '/unstar_files', to: 'files#unmark_starred_multiple'
   end
 
-  resources :vocabularies, vocabulary_id: /[^\/]*/
-  resources :terms,      id: /[^\/]*/
 end

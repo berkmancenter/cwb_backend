@@ -1,34 +1,22 @@
 module CWB
   class Vocabulary < CWB::Resource
-    def self.pattern
+    def self.graph_pattern(_project=nil,uri=nil,label=nil,description=nil)
       [
-        [:resource, RDF.type, PIM.Vocabulary],
-        [:resource, PIM.project, :project]
-      ].freeze
+        [uri||:uri, RDF.type, PIM.Vocabulary],
+        [uri||:uri, RDF::DC.title, label||:label],
+        [uri||:uri, RDF::DC.description, description||:description]
+      ]
     end
 
-    def self.each(scope_id = nil, &block)
-      resources(scope_id).each(&block)
-    end
-
-    def self.find(id, scope_id = nil)
-      resources(scope_id).find { |resource| resource['id'].to_s == id }
-    end
-
-    def self.resources(project_id = nil)
-      resources = JSON.load(::File.read(
-        Rails.root.join('app/fixtures/vocabulary_fixtures.json')
-      ))
-
-      resources.each do |resource|
-        resource[:project] = project_id
-      end
-
-      resources
-    end
-
-    def to_hash
-      super.merge(project: @project.to_s)
+    def self.fixtures
+      [
+        { id: "Format", description: "" },
+        { id: "Document__Type", description: "" },
+        { id: "Zone", description: "Physical area of the building represented." },
+        { id: "Phase", description: "Temporal section of project activities this file belongs to." },
+        { id: "Architectural__Discipline", description: "Area of technical specialty to which this resource belongs." },
+        { id: "Rights", description: "Access control policy, documents read access and/or embargo." }
+      ]
     end
   end
 end

@@ -1,6 +1,6 @@
 class FilesController < ApplicationController
-  # before_action :set_current_user
-  # before_action :authed?
+  before_action :set_current_user
+  before_action :authed?
   respond_to :json
 
   def index

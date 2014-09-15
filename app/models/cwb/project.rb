@@ -4,6 +4,7 @@ require 'date'
 
 module CWB
   class Project < CWB::Resource
+    attr_accessor :name, :description, :path
     # when passed to .all, :uri is a sparql variable
     # when passed to .each(:project_id), uri is the URI for the project
     def self.graph_pattern(uri=nil,name=nil,description=nil,path=nil)
@@ -20,6 +21,40 @@ module CWB
       project = params[0]
 
       if ::File.directory?(project_dir)
+        # vocab init
+        CWB::Vocabulary.fixtures.each do |fix|
+          fix.each do |key,val|
+           if key == :id
+            @label = val
+           end
+          end
+
+          voc_params = [project, RDF::URI("#{@label}")]
+
+          fix.each_value do |value|
+            voc_params << value
+          end
+
+          CWB::Vocabulary.turtle_create(voc_params)
+        end
+
+        # term init
+        CWB::Term.fixtures.each do |fix|
+          fix.each do |key,val|
+            if key == :id
+              @label = val + UUIDTools::UUID.timestamp_create
+            end
+          end
+
+          voc_params = [project, RDF::URI("#{@label}")]
+
+          fix.each_value do |value|
+            voc_params << value
+          end
+
+          CWB::Term.turtle_create(voc_params)
+        end
+
         CWB::Project.create(params)
 
         Find.find(Pathname(project_dir).to_s) do |path|

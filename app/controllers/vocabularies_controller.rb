@@ -4,10 +4,10 @@ class VocabulariesController < ApplicationController
   respond_to :json
 
   def index
-    render json: CWB::Vocabulary.each(params[:vocabulary_id])
+    render json: CWB::Vocabulary.nested_all(params[:project_id])
   end
 
   def show
-    render json: RDF::Vocabulary('http://libraries.mit.edu/ontologies/pim/pim1.0#')
+    render json: CWB::Vocabulary.nested_find(params[:id], params[:project_id])
   end
 end
