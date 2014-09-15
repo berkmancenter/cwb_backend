@@ -6,7 +6,7 @@ set :repo_url, 'git@git.metabahn.net:client/cwb-rails.git'
 
 set :deploy_to, '/var/apps/cwb'
 set :scm, :git
-set :branch, :develop
+# set :branch, :develop
 
 # set :format, :pretty
 # set :log_level, :debug
