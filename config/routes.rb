@@ -11,10 +11,13 @@ Rails.application.routes.draw do
 
   resources :projects,     id: /[^\/]*/ do
     resources :folders,    id: /[^\/]*/
-    resources :files, except: :destroy,     id: /[^\/]*/
+    resources :files, except: :destroy,     id: /[^\/]*/ do
+      post '/tag_file', to: 'files#tag_file'
+    end
+    resources :vocabularies, id: /[^\/]*/ do
+      resources :terms,      id: /[^\/]*/
+    end
     post '/files/:id', to: 'files#destroy', id: /[^\/]*/
   end
 
-  resources :vocabularies, vocabulary_id: /[^\/]*/
-  resources :terms,      id: /[^\/]*/
 end

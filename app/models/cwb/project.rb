@@ -19,6 +19,40 @@ module CWB
       project_dir = params[3]
       project = params[0]
 
+      # vocab init
+      CWB::Vocabulary.fixtures.each do |fix|
+        fix.each do |key,val|
+         if key == :id
+          @label = val
+         end
+        end
+
+        voc_params = [project, RDF::URI("#{@label}")]
+
+        fix.each_value do |value|
+          voc_params << value
+        end
+
+        CWB::Vocabulary.turtle_create(voc_params)
+      end
+
+      # term init
+      CWB::Term.fixtures.each do |fix|
+        fix.each do |key,val|
+          if key == :id
+            @label = val + UUIDTools::UUID.timestamp_create
+          end
+        end
+
+        term_params = [project, RDF::URI("#{@label}")]
+
+        fix.each_value do |value|
+          term_params << value
+        end
+
+        CWB::Term.turtle_create(term_params)
+      end
+
       if ::File.directory?(project_dir)
         CWB::Project.create(params)
 
@@ -45,10 +79,13 @@ module CWB
             folder = 'file:/'  + ::File.basename(::File.expand_path("..", path.to_s)).to_s
             created = ::File.ctime(path.to_s).to_datetime.to_s
             size = ::File.size(path.to_s).to_s
-            type = FileMagic.new.file(path.to_s)
+            type = FileMagic.new.file(path.to_s).to_s.split(',')[0]
             modified = ::File.mtime(path.to_s).to_datetime.to_s
+            starred = 'false'
+            tag = 'nil'
 
-            params = [project,uri,name,rel_path.to_s,created,size,type,folder,modified]
+
+            params = [project,uri,name,rel_path.to_s,created,size,type,folder,modified,starred,tag]
             CWB::File.create(params)
           end
         end
