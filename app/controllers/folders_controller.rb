@@ -1,11 +1,12 @@
 class FoldersController < ApplicationController
-  # before_action :set_current_user
-  # before_action :authed?
+  before_action :set_current_user
+  before_action :authed?
   respond_to :json
 
   def index
     folders = CWB::Folder.nested_all(params[:project_id])
     folders.each do |folder|
+      folder[:project] = params[:project_id]
       folder.each do |k,v|
         folder[k] = nil if v == '_null'
       end

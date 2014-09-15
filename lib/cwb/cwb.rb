@@ -2,7 +2,7 @@ require 'cwb/pim'
 require 'sparql/client' # @see https://rubygems.org/gems/sparql-client
 
 module CWB
-  BASE_URI = RDF::URI('http://facade.mit.edu/dataset/').freeze
+  BASE_URI = RDF::URI('http://facade.mit.edu/dataset/')
 
   def self.endpoint(mode = :query)
     database = YAML.load_file('config/rdf_database.yml')

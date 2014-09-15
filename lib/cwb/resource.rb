@@ -1,7 +1,6 @@
 class CWB::Resource
   def self.all
-    # block being passed gives rails server output showing triples being passed in
-    query = CWB.sparql.select.where(* graph_pattern.each { |f| p f } )
+    query = CWB.sparql.select.where(*graph_pattern)
     sparql_solutions = query.execute
     array = format_sparql_solution(sparql_solutions)
   end
@@ -9,17 +8,14 @@ class CWB::Resource
   def self.find(uri, container_array = [])
     uri = RDF::URI(uri)
     query = CWB.sparql.select.where(* graph_pattern(uri).each).distinct
-    # gives some useful output to rails server log
-    p query
     sparql_solutions = query.execute
     hash = format_sparql_solution(sparql_solutions, uri, true)
   end
 
-  def self.nested_all(scope_uri, container_array = [])
+  def self.nested_all(scope_uri, vocab_uri=nil, container_array = [])
+    vocab_uri = RDF::URI("#{vocab_uri}") if vocab_uri
     scope_uri = RDF::URI(scope_uri)
-    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern.each).distinct
-    # gives some useful output to rails server log
-    p query
+    query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern(scope_uri,nil,nil,vocab_uri)).distinct
     sparql_solutions = query.execute
     # pass true to set subquery? boolean
     array = format_sparql_solution(sparql_solutions, scope_uri, false)
@@ -30,7 +26,6 @@ class CWB::Resource
     scope_uri = RDF::URI(scope_uri)
     query = CWB.sparql.select.graph(scope_uri).where(*graph_pattern(nil, uri)).distinct
     # gives some useful output to rails server log
-    p query
     sparql_solutions = query.execute
     # pass true to set subquery? boolean
     hash = format_sparql_solution(sparql_solutions, scope_uri, true)
@@ -38,11 +33,12 @@ class CWB::Resource
 
   def self.sparql_format(params)
     # 4store very picky about post data
+    
     array = graph_pattern(*params)
     array.each do |a|
       a.each_with_index do |aa, ind|
         if aa.is_a? String
-          a[ind] = %Q[\"#{aa}\"]
+          a[ind] = "'#{aa}'"
         else
           a[ind] = '<' + aa.to_s + '>'
         end
@@ -54,7 +50,40 @@ class CWB::Resource
 
   def self.create(params)
     triples = sparql_format(params)
+    project_uri = '<' + params[0].to_s + '>'
+    uri = URI.parse("http://localhost:8890/update/")
+    http = Net::HTTP.new(uri.host, uri.port)
+    postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = postdata
+    response = http.request(request)
+  end
+
+  def self.turtle_create(params)
+    triples = sparql_format(params)
+    triples.split('+.').each do |split|
+      split = split + '+.'
+      split.gsub!('+', ' ')
+      split[0] = '' if split[0] == ' '
+      Net::HTTP::post_form URI('http://localhost:8890/data/'), 
+        { "data" => "#{split}", "graph" => "#{params[0]}", "mime-type" => "application/x-turtle" }
+    end
+  end
+
+  def self.single_delete(params)
+    project_uri = '<' + params[0].to_s + '>'
+    uri = URI.parse('http://localhost:8890/update/')
+    http = Net::HTTP.new(uri.host, uri.port)
+    triples = sparql_format_single(params)
+    postdata = %Q[update=DELETE+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = postdata
+    response = http.request(request)
+  end
+
+  def self.single_create(params)
     graph = '<' + params[0].to_s + '>'
+    triples = sparql_format_single(params)
     uri = URI.parse('http://localhost:8890/update/')
     http = Net::HTTP.new(uri.host, uri.port)
     postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ graph }+{+#{ triples }+}+}]
@@ -63,24 +92,32 @@ class CWB::Resource
     response = http.request(request)
   end
 
+  def self.sparql_format_single(params)
+    # 4store very picky about post data
+    params.shift
+    params.each_with_index do |a, i|
+      if a.is_a? String
+        params[i] = %Q[\"#{a}\"]
+      else
+        params[i] = '<' + a.to_s + '>'
+      end
+    end
+    params << '.'
+    t = params.flatten.join('+')
+  end
+
   def self.delete(id, scope_id=nil)
     uri = URI.parse('http://localhost:8890/update/')
     http = Net::HTTP.new(uri.host, uri.port)
-    # deleteing specific triples may be impossible with 4store
-    # if scope_id 
-    #   request = Net::HTTP::Post.new(scp)
-    #   request.add_field('Content-Type', 'application/sparql-query')
-    #   request.body = %Q^ update=DELETE DATA { <#{id}> "p" "s" .  }^
-    #   response = http.request(request)
     request = Net::HTTP::Delete.new(id)
     response = http.request(request)
   end
 
   def self.update(params)
-    graph = params[0].to_s
+    project_uri = params[0].to_s
     endpoint = CWB.endpoint
 
-    delete(graph)
+    delete(project_uri)
     create(params)
   end
 
@@ -96,7 +133,11 @@ class CWB::Resource
       # bindings defined https://github.com/ruby-rdf/rdf/blob/c97373f394d663cd369c1d1943e1124ae9b224fa/lib/rdf/query/solutions.rb#L97
       solution.bindings.each do |k,v|
         k == :uri ? k = :id : k
-        hash = Hash[k, v.to_s]
+        if v.to_s =~ /__/ && k == :label
+          hash = Hash[k, v.to_s.gsub!(/__/, ' ')]
+        else
+          hash = Hash[k, v.to_s]
+        end
         attrs.merge!(hash)
       end
       return attrs if is_subquery
@@ -104,6 +145,10 @@ class CWB::Resource
       attrs = {}
     end
     # .find needs one hash (attrs) .each needs an array (cont_array)
-    container_array.empty? ? attrs : container_array
+    if container_array.empty?
+      attrs
+    else
+      container_array.sort_by! { |i| i[:label].downcase if i[:label] }
+    end
   end
 end
