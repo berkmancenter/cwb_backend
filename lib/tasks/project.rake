@@ -59,9 +59,7 @@ namespace :project do
 
 
       path = Pathname(path)
-      binding.pry
       rel_path = Pathname(path.to_s[(project_dir.to_s.size+1)..-1])
-      binding.pry
       is_toplevel = rel_path.parent.to_s.eql?('.')
 
       puts "Processing: #{rel_path}"

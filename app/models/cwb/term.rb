@@ -1,5 +1,6 @@
 module CWB
   class Term < CWB::Resource
+    attr_accessor :label, :description
     def self.graph_pattern(_project=nil,uri=nil,label=nil,vocab=nil,description=nil)
       [
         [uri||:uri, RDF.type, PIM.Term],
@@ -7,6 +8,16 @@ module CWB
         [uri||:uri, RDF::DC.description, description||:description],
         [uri||:uri, RDF::DC.isPartOf, vocab||:vocab]
       ]
+    end
+
+    def self.term_delete(params)
+      del_params = []
+      graph_pattern(*params).each do |triple|
+        del_params << params[0]
+        del_params << triple
+        single_delete(del_params.flatten)
+        del_params = []
+      end
     end
 
     def self.fixtures

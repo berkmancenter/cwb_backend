@@ -4,6 +4,7 @@ require 'date'
 
 module CWB
   class Project < CWB::Resource
+    attr_accessor :name, :description, :path
     # when passed to .all, :uri is a sparql variable
     # when passed to .each(:project_id), uri is the URI for the project
     def self.graph_pattern(uri=nil,name=nil,description=nil,path=nil)

@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
 
   def create
     account = CWB::Session.authenticate(
-      session_params[:username], session_params[:password]
+      session_params[:name], session_params[:password]
     )
 
     if account
@@ -35,6 +35,6 @@ class SessionsController < ApplicationController
   private
 
   def session_params
-    params.require(:session).permit(:id, :username, :password)
+    params.require(:session).permit(:id, :name, :password)
   end
 end
