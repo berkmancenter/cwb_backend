@@ -83,8 +83,10 @@ module CWB
             type = FileMagic.new.file(path.to_s).to_s.split(',')[0]
             modified = ::File.mtime(path.to_s).to_datetime.to_s
             starred = 'false'
+            tag = 'nil'
 
-            params = [project,uri,name,rel_path.to_s,created,size,type,folder,modified,starred]
+
+            params = [project,uri,name,rel_path.to_s,created,size,type,folder,modified,starred,tag]
             CWB::File.create(params)
           end
         end

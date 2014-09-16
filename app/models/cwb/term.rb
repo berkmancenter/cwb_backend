@@ -12,11 +12,26 @@ module CWB
 
     def self.term_delete(params)
       del_params = []
+      project_uri = RDF::URI(params[0])
       graph_pattern(*params).each do |triple|
-        del_params << params[0]
+        del_params << project_uri
         del_params << triple
-        single_delete(del_params.flatten)
+        del_params.flatten!
+        full_tag_delete(project_uri, del_params[1])
+        single_delete(del_params)
         del_params = []
+      end
+    end
+
+    def self.full_tag_delete(project_uri, tag)
+      project_id = project_uri.to_s
+      files = CWB::File.nested_all(project_id, vocab_uri=nil, tagged=true)
+      files.each do |i|
+        file_uri = RDF::URI(i[:id])
+
+        del_params = [project_uri, file_uri, PIM.tagged, tag]
+
+        single_delete(del_params)
       end
     end
 
