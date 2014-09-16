@@ -3,14 +3,7 @@ module Requests
     @json ||= JSON.parse(response.body)
   end
 
-  def create_project(name)
-    uri = RDF::URI('http://www.example.com/test')
-    name = name 
-    descript = 'testdescript'
-    path = 'testpath' 
-    params_array = [uri, name, descript, path]
-
-     CWB::Project.create(params_array) 
+  def sign_in(account)
+    post '/sessions', session: { username: account.username, password: account.password }
   end
-
 end
