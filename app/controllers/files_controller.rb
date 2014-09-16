@@ -67,6 +67,22 @@ class FilesController < ApplicationController
     render json: { success: 'Successfully unstarred files' }
   end
 
+  def tag_file
+    file_params[:tags].each {|tag|
+      CWB::File.tag_file(params[:project_id], params[:file_id], tag)
+    }
+
+    render json: { success: 'Successfully taggedfile' }
+  end
+
+  def untag_file
+    file_params[:tags].each {|tag|
+      CWB::File.untag_file(params[:project_id], params[:file_id], tag)
+    }
+
+    render json: { success: 'Successfully untagged file' }
+  end
+
   private
 
   def file_params
