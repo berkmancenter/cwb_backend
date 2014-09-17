@@ -7,7 +7,7 @@ module CWB
     validates_presence_of :username, :password, on: :create
     before_create :encrypt_password
     before_create :set_auth_token
-    has_one :profile
+    has_one :profile, dependent: :destroy
 
     private
 
