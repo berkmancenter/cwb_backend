@@ -13,32 +13,34 @@ module CWB
       ]
     end
 
-    def self.assoced_files(project, folder_id)
+    def self.assoced_tags(project, folder_id)
       project_uri = RDF::URI(project)
       graph_pattern = [
         [:uri, RDF.type, PIM.File],
         [:uri, PIM.colocation, folder_id],
-        [:uri, PIM.isStarred, :starred]
+        [:uri, PIM.tagged, :tag]
       ]
 
-      query = CWB.sparql.select.graph(project_uri).where(*graph_pattern).distinct
+      query = CWB.sparql.select.graph(project_uri).where(*graph_pattern)
       solutions = query.execute
-      fstar_array=[]
+      ftag_array=[]
       _contain=[]
+      file_count_array=[]
       solutions.each_with_index do |s, index|
+        file_count_array << s unless file_count_array.include?(s)
         s.bindings.each do |k,v|
           if k == :uri
             @key = v.to_s
-          elsif k == :starred
+          elsif k == :tag
             @value = v.to_s
           end
           if @key && @value
             @_hash = Hash[@key, @value]
           end
         end
-        fstar_array << @_hash unless @_hash.nil?
+        ftag_array << @_hash unless @_hash.nil?
       end
-      fstar_array.reduce Hash.new, :merge
+      ftag_array
     end
   end
 end

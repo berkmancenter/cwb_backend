@@ -1,7 +1,7 @@
 module CWB
   class Session < CWB::Resource
-    def self.authenticate(name, password)
-      if account = CWB::Account.find_by_name(name)
+    def self.authenticate(username, password)
+      if account = CWB::Account.find_by_username(username)
         account if BCrypt::Password.new(account.password_hash) == password
       end
     end
