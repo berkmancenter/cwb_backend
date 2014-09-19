@@ -60,12 +60,14 @@ module CWB
         Find.find(Pathname(project_dir).to_s) do |path|
           next if path.eql? project_dir
 
+          project_root = Pathname(project_dir).basename
           path = Pathname(path)
-          rel_path = Pathname(path.to_s[(project_dir.to_s.size+1)..-1])
-          is_toplevel = rel_path.parent.to_s.eql?('.')
+          name = ::File.basename(path.to_s)
+
+          rel_path = Pathname(path.to_s[(project_dir.to_s.size-project_root.to_s.size)..-1])
+          is_toplevel = name == path.to_s[(project_dir.to_s.size+1)..-1]
 
           uri = RDF::URI('file:/' + rel_path.to_s)
-          name = ::File.basename(path.to_s)
 
           next if is_toplevel && !path.directory? # we don't support files in the root directory
           next if rel_path.basename.to_s == '.DS_Store' # ignore Mac OS X artifacts
