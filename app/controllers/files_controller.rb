@@ -4,9 +4,10 @@ class FilesController < ApplicationController
   respond_to :json
 
   def index
-   files = CWB::File.nested_all(params[:project_id])
+   files = CWB::File.nested_all(params[:project_id], vocab_uri=nil, tagged=true)
    
     files.each do |file|
+      file[:project] = params[:project_id]
       file.each do |k,v|
         file[k] = v.to_i if k == :size
       end
@@ -16,7 +17,7 @@ class FilesController < ApplicationController
   end
 
   def show
-    query = CWB::File.nested_find(params[:id], params[:project_id])
+    query = CWB::File.nested_find(params[:id], params[:project_id], tagged=true)
     resource =
       if query.nil?
         { error: 'Query failed', status: :not_found }
@@ -67,9 +68,25 @@ class FilesController < ApplicationController
     render json: { success: 'Successfully unstarred files' }
   end
 
+  def tag_file
+    file_params[:tags].each {|tag|
+      CWB::File.tag_file(params[:project_id], params[:file_id], tag)
+    }
+
+    render json: { success: 'Successfully taggedfile' }
+  end
+
+  def untag_file
+    file_params[:tags].each {|tag|
+      CWB::File.untag_file(params[:project_id], params[:file_id], tag)
+    }
+
+    render json: { success: 'Successfully untagged file' }
+  end
+
   private
 
   def file_params
-    params.require(:file).permit(:ids=>[])
+    params.require(:file).permit(ids: [], tags: [])
   end
 end
