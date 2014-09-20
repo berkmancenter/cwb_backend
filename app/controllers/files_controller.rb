@@ -7,6 +7,7 @@ class FilesController < ApplicationController
    files = CWB::File.nested_all(params[:project_id], vocab_uri=nil, tagged=true)
    
     files.each do |file|
+      file[:project] = params[:project_id]
       file.each do |k,v|
         file[k] = v.to_i if k == :size
       end
