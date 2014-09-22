@@ -1,4 +1,4 @@
-require 'cwb'
+require_relative '../cwb/cwb'
 require 'digest/sha1' # for Digest::SHA1.hexdigest
 
 namespace :account do

@@ -1,4 +1,4 @@
-require 'cwb'
+require_relative '../cwb/cwb'
 require 'date' # for DateTime
 require 'find' # for Find.find
 
