@@ -4,15 +4,16 @@ class AccountsController < ApplicationController
   before_action :account_manager?, only: [:create]
   respond_to :json
 
-  def index
-    resource = CWB::Account.all.map { |a| 
-      aj = a.as_json
-      aj['name'] = a.profile.name
-      aj['email'] = a.profile.email
-      aj
-    }
-    render json: resource
-  end
+  # def index
+  #   resource = CWB::Account.all
+  #   # .map { |a| 
+  #   #   aj = a.as_json
+  #   #   aj['name'] = a.profile.name
+  #   #   aj['email'] = a.profile.email
+  #   #   aj
+  #   # }
+  #   render json: resource
+  # end
 
   def create
     @account = CWB::Account.new(account_params)

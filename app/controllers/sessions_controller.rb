@@ -25,9 +25,14 @@ class SessionsController < ApplicationController
   end
 
   def auth
+    account = CWB::Account.find_by_token(session[:token])
     render json: {
             authenticated: !!session[:token],
-            token: session[:token] || false
+            token: session[:token] || false,
+            id: account.id,
+            username: account.username,
+            name: account.name,
+            email: account.email
           }
   end
 

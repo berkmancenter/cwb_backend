@@ -3,11 +3,17 @@ require 'bcrypt'
 module CWB
   class Account < ActiveRecord::Base
     include BCrypt
-    attr_accessor :password, :name
+    attr_accessor :password, :name, :email
     validates_presence_of :username, :password, on: :create
     before_save :encrypt_password
     before_create :set_auth_token
     has_one :profile, dependent: :destroy
+    after_initialize :set
+
+    def set
+      self.name = self.profile.name
+      self.email = self.profile.email
+    end
 
     # def to_json
     #   data = super
