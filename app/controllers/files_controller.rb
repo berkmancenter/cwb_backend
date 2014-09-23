@@ -71,7 +71,7 @@ class FilesController < ApplicationController
   def tag_file
     file_params[:tags].each {|tag|
       CWB::File.tag_file(params[:project_id], params[:file_id], tag)
-    }
+    } if file_params[:tags]
 
     render json: { success: 'Successfully taggedfile' }
   end
