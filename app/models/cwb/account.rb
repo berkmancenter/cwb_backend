@@ -11,8 +11,10 @@ module CWB
     after_initialize :set
 
     def set
-      self.name = self.profile.name
-      self.email = self.profile.email
+      if self.profile
+        self.name = self.profile.name
+        self.email = self.profile.email
+      end
     end
 
     # def to_json
