@@ -5,7 +5,13 @@ class AccountsController < ApplicationController
   respond_to :json
 
   def index
-    render json: CWB::Account.all
+    resource = CWB::Account.all.map { |a| 
+      aj = a.as_json
+      aj['name'] = a.profile.name
+      aj['email'] = a.profile.email
+      aj
+    }
+    render json: resource
   end
 
   def create
@@ -15,6 +21,20 @@ class AccountsController < ApplicationController
       render json: { success: 'Registration Successful.' }
     else
       render json: { error: 'Registration Unsuccessful.' }
+    end
+  end
+
+  def update
+    if account = CWB::Account.find(params[:id])
+      if profile = CWB::Profile.find(account.profile)
+        profile.update_attributes(profile_params)
+        profile.save
+      end
+      account.update_attributes(account_params)
+      account.save
+      render json: 'Successfully updated account'
+    else 
+      render json: 'You are not authorized to update this account', status: :unauthorized
     end
   end
 
@@ -32,5 +52,9 @@ class AccountsController < ApplicationController
 
   def account_params
     params.require(:account).permit(:username, :password, :account_manager)
+  end
+
+  def profile_params
+    params.require(:account).permit(:name, :email)
   end
 end
