@@ -11,10 +11,8 @@ Rails.application.routes.draw do
 
   resources :projects,     id: /[^\/]*/ do
     resources :folders,    id: /[^\/]*/
-    resources :files, except: :destroy,     id: /[^\/]*/ do
-      put '/tag_file', to: 'files#tag_file'
-      delete '/untag_file', to: 'files#untag_file'
-    end
+    resources :files, except: :destroy,     id: /[^\/]*/
+    put '/tag_files', to: 'files#tag_files'
     put '/star_file/:id', to: 'files#mark_starred', id: /[^\/]*/
     put '/unstar_file/:id', to: 'files#unmark_starred', id: /[^\/]*/
     put '/star_files', to: 'files#mark_starred_multiple'
