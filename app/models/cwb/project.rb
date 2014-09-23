@@ -60,24 +60,27 @@ module CWB
         Find.find(Pathname(project_dir).to_s) do |path|
           next if path.eql? project_dir
 
+          project_root = Pathname(project_dir).basename
           path = Pathname(path)
-          rel_path = Pathname(path.to_s[(project_dir.to_s.size+1)..-1])
-          is_toplevel = rel_path.parent.to_s.eql?('.')
+          name = ::File.basename(path.to_s)
+
+          rel_path = Pathname(path.to_s[(project_dir.to_s.size-project_root.to_s.size)..-1])
+          is_toplevel = name == path.to_s[(project_dir.to_s.size+1)..-1]
 
           uri = RDF::URI('file:/' + rel_path.to_s)
-          name = ::File.basename(path.to_s)
 
           next if is_toplevel && !path.directory? # we don't support files in the root directory
           next if rel_path.basename.to_s == '.DS_Store' # ignore Mac OS X artifacts
           next if rel_path.basename.to_s == 'Thumbs.db' # ignore Windows artifacts
 
           if ::File.ftype(path) == 'directory' && path.parent.to_s != '.'
-            parent = is_toplevel ? '_null' : rel_path.parent.to_s
+            parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
+
 
             params = [project,uri,name,rel_path.to_s,parent]
             CWB::Folder.create(params)
           elsif ::File.ftype(path) == 'file'
-            folder = 'file:/'  + ::File.basename(::File.expand_path("..", path.to_s)).to_s
+            folder = 'file:/'  + rel_path.parent.to_s
             created = ::File.ctime(path.to_s).to_datetime.to_s
             size = ::File.size(path.to_s).to_s
             type = FileMagic.new.file(path.to_s).to_s.split(',')[0]
