@@ -8,14 +8,21 @@ class SessionsController < ApplicationController
 
     if account
       session[:token] = account.token
-      response = { success: 'Login is successful!', status: :success, token: account.token }
+      response = {
+              authenticated: !!session[:token],
+              token: session[:token] || false,
+              id: account.id,
+              username: account.username,
+              name: account.name,
+              email: account.email
+            }
       status_code = 200
     else
       response = { error: 'Login credentials are invalid.', status: :unauthorized }
       status_code = 401
     end
 
-    render json: response, status: status_code
+    render json: response, status: status_code 
   end
 
   def destroy
