@@ -13,25 +13,34 @@ module CWB
     def self.term_delete(params)
       del_params = []
       project_uri = RDF::URI(params[0])
+      files = file_tag_delete(project_uri, params[1])
       graph_pattern(*params).each do |triple|
         del_params << project_uri
         del_params << triple
         del_params.flatten!
-        full_tag_delete(project_uri, del_params[1])
         single_delete(del_params)
         del_params = []
       end
+      files
     end
 
-    def self.full_tag_delete(project_uri, tag)
+    def self.file_tag_delete(project_uri, old_tag)
       project_id = project_uri.to_s
-      files = CWB::File.nested_all(project_id, vocab_uri=nil, tagged=true)
+      files_query = CWB.sparql.select.graph(project_id).where([:uri, PIM.tagged, old_tag])
+      files = files_query.execute
       files.each do |i|
-        file_uri = RDF::URI(i[:id])
-
-        del_params = [project_uri, file_uri, PIM.tagged, tag]
-
+        file_uri = RDF::URI(i[:uri])
+        del_params = [project_uri, file_uri, PIM.tagged, old_tag]
         single_delete(del_params)
+      end
+      files
+    end
+
+    def self.file_tag_create(project_uri, new_tag, files)
+      project_id = project_uri.to_s
+      files.bindings[:uri].each do |i|
+        create_params = [project_uri, i, PIM.tagged, new_tag]
+        single_create(create_params)
       end
     end
 
