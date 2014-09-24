@@ -37,8 +37,7 @@ module CWB
     end
 
     def encrypt_password
-      return false unless password.present?
-      self.password_hash = BCrypt::Password.create(password)
+      self.password_hash = BCrypt::Password.create(password) if password.present?
     end
   end
 end
