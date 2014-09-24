@@ -11,15 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140731160545) do
+ActiveRecord::Schema.define(version: 20140916221350) do
 
   create_table "accounts", force: true do |t|
-    t.string   "name"
-    t.string   "email"
+    t.string   "username"
     t.string   "password_hash"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "token"
+    t.boolean  "account_manager"
+    t.integer  "profile_id"
+  end
+
+  create_table "profiles", force: true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "account_id"
   end
 
 end

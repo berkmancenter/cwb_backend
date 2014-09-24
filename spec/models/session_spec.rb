@@ -3,6 +3,6 @@ describe CWB::Session do
 
   it 'returns nil with bad auth credentials' do
     password = account.password[0..-3]
-    expect(CWB::Session.authenticate(account.name, password)).to be_nil
+    expect(CWB::Session.authenticate(account.username, password)).to be_nil
   end
 end
