@@ -13,7 +13,6 @@ module CWB
     def self.term_delete(params)
       del_params = []
       project_uri = RDF::URI(params[0])
-      files = file_tag_delete(project_uri, params[1])
       graph_pattern(*params).each do |triple|
         del_params << project_uri
         del_params << triple
@@ -21,7 +20,6 @@ module CWB
         single_delete(del_params)
         del_params = []
       end
-      files
     end
 
     def self.file_tag_delete(project_uri, old_tag)

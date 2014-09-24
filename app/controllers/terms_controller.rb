@@ -39,12 +39,15 @@ class TermsController < ApplicationController
     unless resource.empty?
 
       old_uri = RDF::URI(params[:id])
-      project_id = params[:project_id]
+      project_uri = RDF::URI( params[:project_id] )
       vocab = RDF::URI(params[:vocabulary_id])
       label = resource[:label].gsub(' ', '__')
       desc = resource[:description]
-      del_params = [project_id, old_uri, label, vocab, desc]
-      files = CWB::Term.term_delete(del_params)
+
+      files = CWB::Term.file_tag_delete(project_uri, old_uri)
+
+      del_params = [project_uri,old_uri,label,vocab,desc]
+      CWB::Term.term_delete(del_params)
       
       label = term_params[:label].gsub(' ', '__')
       new_uri = RDF::URI('http://facade.mit.edu/dataset/' + label + UUIDTools::UUID.timestamp_create)
@@ -67,17 +70,17 @@ class TermsController < ApplicationController
     resource = CWB::Term.nested_find(params[:id], params[:project_id])
 
     uri = RDF::URI(params[:id])
-    project = params[:project_id]
+    project_uri = params[:project_id]
     vocab = RDF::URI(params[:vocabulary_id])
     label = resource[:label].gsub(' ', '__')
     desc = resource[:description]
 
-    del_params = [project, uri, label, vocab, desc]
+    del_params = [project_uri,uri,label,vocab,desc]
 
-    if !(resource = CWB::Term.term_delete(del_params))
-      render json: {}, status: 404
-    else
+    if resource = CWB::Term.file_tag_delete(project_uri, uri) && CWB::Term.term_delete(del_params)
       render json: resource
+    else
+      render json: {}, status: 404
     end
   end
 
