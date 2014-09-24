@@ -14,7 +14,8 @@ class SessionsController < ApplicationController
               id: account.id,
               username: account.username,
               name: account.name,
-              email: account.email
+              email: account.email,
+              isAdmin: !!account.account_manager
             }
       status_code = 200
     else
@@ -39,7 +40,8 @@ class SessionsController < ApplicationController
             id: account.id,
             username: account.username,
             name: account.name,
-            email: account.email
+            email: account.email,
+            isAdmin: !!account.account_manager
           }
   end
 
