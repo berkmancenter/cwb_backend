@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
+
   root 'root#index'
   get 'download', to: 'root#download'
 
   resources :accounts
+  resources :profiles
 
   post '/register', to: 'accounts#create'
   post '/sessions', to: 'sessions#create'
