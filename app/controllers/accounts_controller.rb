@@ -4,24 +4,27 @@ class AccountsController < ApplicationController
   before_action :account_manager?, only: [:create]
   respond_to :json
 
-  # def index
-  #   resource = CWB::Account.all
-  #   # .map { |a| 
-  #   #   aj = a.as_json
-  #   #   aj['name'] = a.profile.name
-  #   #   aj['email'] = a.profile.email
-  #   #   aj
-  #   # }
-  #   render json: resource
-  # end
+  def index
+    resource = CWB::Account.all
+    .map { |a|
+      aj = a.as_json
+      aj['name'] = a.profile.name
+      aj['email'] = a.profile.email
+      aj.delete("password_hash")
+      aj.delete("token")
+      aj
+    }
+
+    render json: resource
+  end
 
   def create
     @account = CWB::Account.new(account_params)
-    @account.build_profile(name: '', email: '')
+    @account.build_profile(profile_params)
     if @account.save
-      render json: { success: 'Registration Successful.' }
+      render json: { success: 'Account Creation Successful.' }, status: 200
     else
-      render json: { error: 'Registration Unsuccessful.' }
+      render json: { error: 'Account Creation Unsuccessful.' }, status: 400
     end
   end
 
@@ -29,23 +32,33 @@ class AccountsController < ApplicationController
     if account = CWB::Account.find(params[:id])
       if profile = CWB::Profile.find(account.profile)
         profile.update_attributes(profile_params)
-        profile.save
+        account.update_attributes(account_params)
+
+        if profile.valid? & account.valid?
+          profile.save
+          account.save
+          render json: { success: 'Successfully updated account' }, status: 200
+        else
+          render json: { error: 'Unable to update account.' }, status: 400
+        end
+      else
+        render json: { error: 'You are not authorized to update this account'}, status: 401
       end
-      account.update_attributes(account_params)
-      account.save
-      render json: 'Successfully updated account'
-    else 
-      render json: 'You are not authorized to update this account', status: :unauthorized
+    else
+      render json: { error: 'You are not authorized to update this account'}, status: 401
     end
   end
 
   def destroy
     if @current_user.account_manager
       account = CWB::Account.find(params[:id])
-      account.destroy
-      render json: 'Deletion of account successful'
+      if account.destroy
+        render json: { success: 'Deletion of account successful' }, status: 200
+      else
+        render json: { error: 'Deletion of account unsuccessful' }, status: 400
+      end
     else
-      render json: 'Deletion of account unsuccessful', status: :unauthorized
+      render json: { error: 'Deletion of account unsuccessful' }, status: 401
     end
   end
 
