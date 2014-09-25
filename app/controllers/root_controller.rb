@@ -18,32 +18,6 @@ class RootController < ApplicationController
     end
   end
 
-  def download
-    @writer = RDF::Writer.for(:rdfxml).buffer do |write|
-      query = CWB.sparql.construct([:s, :p, :o]).where([:s, :p, :o])
-      query = query.from(RDF::URI(params[:project_id])) if params[:project_id]
-      @stuff = write << query.result
-    end
-
-    if params[:choice] == 'rdfxml'
-
-      send_data @writer,
-                filename: 'pim.rdf',
-                type: 'application/rdf+xml',
-                disposition: 'attachment'
-      
-    elsif params[:choice] == 'n3'
-      @writer = RDF::NTriples::Writer.buffer do |writer|
-        writer.write_graph(@stuff.graph)
-      end
-
-      send_data @writer,
-                filename: 'pim.n3',
-                type: 'application/n-triples',
-                disposition: 'attachment'
-    end
-  end
-
   private
 
   def root_params
