@@ -20,8 +20,7 @@ class RootController < ApplicationController
 
   def download
     @writer = RDF::Writer.for(:rdfxml).buffer do |write|
-      query = CWB.sparql.construct([:s, :p, :o]).where([:s, :p, :o])
-      query = query.from(RDF::URI(params[:project_id])) if params[:project_id]
+      query = CWB.sparql.construct([:s, :p, :o]).graph("#{CWB::BASE_URI + params[:project_id]}").where([:s, :p, :o])
       @stuff = write << query.result
     end
 
