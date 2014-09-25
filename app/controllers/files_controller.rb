@@ -10,10 +10,10 @@ class FilesController < ApplicationController
       tag_history = CWB::TaggingHistory.where(file_tagged: file[:id]).last
       if tag_history
         file[:last_modified_by] = CWB::Account.find(tag_history.account_id).username
-        file[:modified] = tag_history.created_at
+        file[:last_tag_change] = tag_history.created_at
       else
         file[:last_modified_by] = nil
-        file[:modified] = nil
+        file[:last_tag_change] = nil
       end
       file[:project] = params[:project_id]
       file.each do |k,v|
@@ -30,6 +30,11 @@ class FilesController < ApplicationController
       if query.nil?
         { error: 'Query failed', status: :not_found }
       else
+        tag_history = CWB::TaggingHistory.where(file_tagged: 'file:/' + query[:path]).last
+        if tag_history
+          query[:last_modified_by] = CWB::Account.find(tag_history.account_id).username
+          query[:last_tag_change] = tag_history.created_at
+        end
         query
       end
 
