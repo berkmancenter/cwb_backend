@@ -70,6 +70,7 @@ class FilesController < ApplicationController
 
   def tag_files
   file_params[:ids].each do |file_id|
+    history = CWB::TaggingHistory.create(account_id: @current_user.id, file_tagged: file_id)
     query = CWB::File.nested_find(file_id, params[:project_id], tagged=true)
     query[:tag].each {|tag|
       unless tag == 'nil'
@@ -77,11 +78,16 @@ class FilesController < ApplicationController
       end
     } if !query.empty? && query[:tag]
 
+    tagged = [] 
     file_params[:tags].each {|tag|
+      tagged << tag
       unless tag == '[]'
         CWB::File.tag_file(params[:project_id], file_id, tag)
       end
       } if file_params[:tags]
+    tagged_string = tagged.join(',')
+    history.update_attributes(terms_tagged: tagged_string)
+    history.save
    end
 
     render json: { success: 'Successfully taggedfile' }
