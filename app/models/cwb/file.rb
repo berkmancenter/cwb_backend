@@ -45,12 +45,16 @@ module CWB
       uri = RDF::URI(file_id)
       tag = RDF::URI(tag_id)
 
+      
+
+      del_params = [project, uri, PIM.tagged, tag]
       create_params = [project, uri, PIM.tagged, tag]
 
+      single_delete(del_params)
       single_create(create_params)
     end
 
-    def self.untag_file(project_id, file_id, tag_id)
+    def self.untag_file(project_id, file_id, tag_id=nil)
       project = RDF::URI(project_id)
       uri = RDF::URI(file_id)
       tag = RDF::URI(tag_id)

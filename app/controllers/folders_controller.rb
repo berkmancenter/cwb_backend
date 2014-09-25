@@ -12,8 +12,7 @@ class FoldersController < ApplicationController
     end
     folders.each do |folder|
       count = 0
-      array=[]
-      file_count_array = []
+      tagged_files=[]
 
       files = CWB::Folder.assoced_files(params[:project_id], folder[:id])
 
@@ -25,11 +24,11 @@ class FoldersController < ApplicationController
       files = CWB::Folder.assoced_tags(params[:project_id], folder[:id])
 
       files.each do |i|
-        array << i.values.first unless array.include?(i.values.first)
-        array.delete('nil')
+        next if i.values.first == 'nil' || tagged_files.include?(i.keys.first)
+        tagged_files << i.keys.first
       end
 
-      folder[:tagged_count] = array.count
+      folder[:tagged_count] = tagged_files.count
       folder[:file_count] = files.uniq { |i| i.keys.first }.count
 
       folder.each do |k,v|

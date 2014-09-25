@@ -68,20 +68,23 @@ class FilesController < ApplicationController
     render json: { success: 'Successfully unstarred files' }
   end
 
-  def tag_file
+  def tag_files
+  file_params[:ids].each do |file_id|
+    query = CWB::File.nested_find(file_id, params[:project_id], tagged=true)
+    query[:tag].each {|tag|
+      unless tag == 'nil'
+        CWB::File.untag_file(params[:project_id], file_id, tag)
+      end
+    } if !query.empty? && query[:tag]
+
     file_params[:tags].each {|tag|
-      CWB::File.tag_file(params[:project_id], params[:file_id], tag)
-    }
+      unless tag == '[]'
+        CWB::File.tag_file(params[:project_id], file_id, tag)
+      end
+      } if file_params[:tags]
+   end
 
     render json: { success: 'Successfully taggedfile' }
-  end
-
-  def untag_file
-    file_params[:tags].each {|tag|
-      CWB::File.untag_file(params[:project_id], params[:file_id], tag)
-    }
-
-    render json: { success: 'Successfully untagged file' }
   end
 
   private
