@@ -60,7 +60,14 @@ class TermsController < ApplicationController
       create_params = [project_uri, new_uri, label, vocab, desc]
       CWB::Term.turtle_create(create_params)
 
-      render json: resource
+      response = {
+        id: new_uri.to_s,
+        vocabulary_id: vocab.to_s,
+        label: label,
+        description: desc,
+      }
+
+      render json: response
     else
       render json: {}, status: 404
     end
