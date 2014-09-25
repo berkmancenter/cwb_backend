@@ -11,9 +11,6 @@ class FilesController < ApplicationController
       file.each do |k,v|
         file[k] = v.to_i if k == :size
       end
-
-      file[:term_count] = file[:tag].count
-
     end
 
    render json:  files
@@ -25,7 +22,6 @@ class FilesController < ApplicationController
       if query.nil?
         { error: 'Query failed', status: :not_found }
       else
-        query[:term_count] = query[:tag].count
         query
       end
 
