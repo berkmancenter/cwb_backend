@@ -5,8 +5,16 @@ class FilesController < ApplicationController
 
   def index
    files = CWB::File.nested_all(params[:project_id], vocab_uri=nil, tagged=true)
-   
+
     files.each do |file|
+      tag_history = CWB::TaggingHistory.where(file_tagged: file[:id]).last
+      if tag_history
+        file[:last_modified_by] = CWB::Account.find(tag_history.account_id).username
+        file[:modified] = tag_history.created_at
+      else
+        file[:last_modified_by] = nil
+        file[:modified] = nil
+      end
       file[:project] = params[:project_id]
       file.each do |k,v|
         file[k] = v.to_i if k == :size
