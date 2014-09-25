@@ -39,7 +39,7 @@ module CWB
       files.bindings[:uri].each do |i|
         create_params = [project_uri, i, PIM.tagged, new_tag]
         single_create(create_params)
-      end
+      end if files.bindings[:uri]
     end
 
     def self.fixtures
