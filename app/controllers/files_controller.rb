@@ -5,12 +5,15 @@ class FilesController < ApplicationController
 
   def index
    files = CWB::File.nested_all(params[:project_id], vocab_uri=nil, tagged=true)
-   
+
     files.each do |file|
       file[:project] = params[:project_id]
       file.each do |k,v|
         file[k] = v.to_i if k == :size
       end
+
+      file[:term_count] = file[:tag].count
+
     end
 
    render json:  files
@@ -22,6 +25,7 @@ class FilesController < ApplicationController
       if query.nil?
         { error: 'Query failed', status: :not_found }
       else
+        query[:term_count] = query[:tag].count
         query
       end
 
