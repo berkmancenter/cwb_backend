@@ -3,10 +3,28 @@ require 'bcrypt'
 module CWB
   class Account < ActiveRecord::Base
     include BCrypt
-    attr_accessor :password
-    validates_presence_of :name, :email, :password, on: :create
-    before_create :encrypt_password
+    attr_accessor :password, :name, :email
+    validates_presence_of :username, :password, on: :create
+    before_save :encrypt_password
     before_create :set_auth_token
+    has_one :profile, dependent: :destroy
+    after_initialize :set
+
+    def set
+      if self.profile
+        self.name = self.profile.name
+        self.email = self.profile.email
+      end
+    end
+
+    # def to_json
+    #   data = super
+    #   data[:name] = self.profile.name
+    # end
+    # def username=(new_name)
+    #   new_name = self.profile.name
+    #   write_attribute(:name, new_name)
+    # end 
 
     private
 
@@ -19,8 +37,7 @@ module CWB
     end
 
     def encrypt_password
-      return false unless password.present?
-      self.password_hash = BCrypt::Password.create(password)
+      self.password_hash = BCrypt::Password.create(password) if password.present?
     end
   end
 end

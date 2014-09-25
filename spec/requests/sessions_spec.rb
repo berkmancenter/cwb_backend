@@ -1,14 +1,13 @@
 describe 'With correct authentication credentials' do
+  let(:account) { FactoryGirl.create(:account) }
+  let(:old) { account.token }
   before(:each) do
-    @account =  FactoryGirl.create(:account)
-    post '/sessions',
-      session: { username: @account.name, password: @account.password }
+    sign_in(account)
   end
 
   context 'signing in' do
     it 'will set session[:token]' do
-      expect(response).to be_success
-      expect(session[:token]).to eq(@account.token)
+      expect(session[:token]).to eq(account.token)
     end
   end
 
@@ -21,8 +20,7 @@ describe 'With correct authentication credentials' do
 
     it 'will change the account.token' do
       get '/logout'
-      new = CWB::Account.find(@account).token
-      expect(new).to_not eq(@account.token)
+      expect(CWB::Account.find(account).token).to_not eq(old)
     end
   end
 end

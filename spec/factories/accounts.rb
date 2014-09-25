@@ -1,7 +1,8 @@
 FactoryGirl.define do
   factory :account, class: CWB::Account do
-    name            { Faker::Name.name }
-    email           { Faker::Internet.email }
-    password        { Faker::Internet.password(10, 20) }
+    username            { Faker::Internet.user_name }
+    password            { Faker::Internet.password(10, 20) }
+    account_manager     false
+    profile
   end
 end

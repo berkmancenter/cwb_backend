@@ -1,6 +1,35 @@
-puts 'creating five accounts'
-5.times { Fabricate(:account) }
-puts 'Creating account with know credentials...'
-puts "  name: 'mb' with password: 'mb'"
-known_account = CWB::Account.new(name: 'mb', email: 'mb@test.com', password: 'mb')
-known_account.save
+puts 'Creating mb account with credentials:'
+puts "username: 'mb', password: 'mb'"
+mb_account = CWB::Account.new(username: 'mb', password: 'mb', account_manager: true)
+mb_account.save
+mb_profile = mb_account.build_profile(name: "Ryan Clardy", email: "ryan@metabahn.com")
+mb_profile.save
+mb_account.profile_id = mb_profile.id
+mb_account.save
+
+puts 'Creating cwb account with credentials:'
+puts 'username: cwb, password: cwb'
+cwb_account = CWB::Account.new(username: 'cwb', password: 'cwb')
+cwb_account.save
+cwb_profile = cwb_account.build_profile(name: "CWB Tester", email: "cwb_tester@cyber.law.harvard.edu")
+cwb_profile.save
+cwb_account.profile_id = cwb_profile.id
+cwb_account.save
+
+puts 'Creating admin account with credentials:'
+puts 'username: jjubinville, password: jjubinville'
+admin_account1 = CWB::Account.new(username: 'jjubinville', password: 'jjubinville', account_manager: true)
+admin_account1.save
+admin_profile1 = admin_account1.build_profile(name: "Jennifer Jubinville", email: "jjubinville@cyber.law.harvard.edu")
+admin_profile1.save
+admin_account1.profile_id = admin_profile1.id
+admin_account1.save
+
+puts 'Creating admin account with credentials:'
+puts 'username: jsd, password: jsd'
+admin_account2 = CWB::Account.new(username: 'jsd', password: 'jsd', account_manager: true)
+admin_account2.save
+admin_profile2 = admin_account2.build_profile(name: "Sebastian Diaz", email: "jsd@cyber.law.harvard.edu")
+admin_profile2.save
+admin_account2.profile_id = admin_profile2.id
+admin_account2.save
