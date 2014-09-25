@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
 
   root 'root#index'
-  get 'download', to: 'root#download'
 
   resources :accounts
   resources :profiles
@@ -12,6 +11,7 @@ Rails.application.routes.draw do
   get '/authenticated', to: 'sessions#auth'
 
   resources :projects,     id: /[^\/]*/ do
+    get 'download', to: 'projects#download'
     resources :folders,    id: /[^\/]*/
     resources :files, except: :destroy,     id: /[^\/]*/
     put '/tag_files', to: 'files#tag_files'
