@@ -7,6 +7,14 @@ class FilesController < ApplicationController
    files = CWB::File.nested_all(params[:project_id], vocab_uri=nil, tagged=true)
 
     files.each do |file|
+      tag_history = CWB::TaggingHistory.where(file_tagged: file[:id]).last
+      if tag_history
+        file[:last_modified_by] = CWB::Account.find(tag_history.account_id).username
+        file[:last_tag_change] = tag_history.created_at
+      else
+        file[:last_modified_by] = nil
+        file[:last_tag_change] = nil
+      end
       file[:project] = params[:project_id]
       file.each do |k,v|
         file[k] = v.to_i if k == :size
@@ -22,6 +30,11 @@ class FilesController < ApplicationController
       if query.nil?
         { error: 'Query failed', status: :not_found }
       else
+        tag_history = CWB::TaggingHistory.where(file_tagged: 'file:/' + query[:path]).last
+        if tag_history
+          query[:last_modified_by] = CWB::Account.find(tag_history.account_id).username
+          query[:last_tag_change] = tag_history.created_at
+        end
         query
       end
 
@@ -70,6 +83,7 @@ class FilesController < ApplicationController
 
   def tag_files
   file_params[:ids].each do |file_id|
+    history = CWB::TaggingHistory.create(account_id: @current_user.id, file_tagged: file_id)
     query = CWB::File.nested_find(file_id, params[:project_id], tagged=true)
     query[:tag].each {|tag|
       unless tag == 'nil'
@@ -77,11 +91,16 @@ class FilesController < ApplicationController
       end
     } if !query.empty? && query[:tag]
 
+    tagged = [] 
     file_params[:tags].each {|tag|
+      tagged << tag
       unless tag == '[]'
         CWB::File.tag_file(params[:project_id], file_id, tag)
       end
       } if file_params[:tags]
+    tagged_string = tagged.join(',')
+    history.update_attributes(terms_tagged: tagged_string)
+    history.save
    end
 
     render json: { success: 'Successfully taggedfile' }
