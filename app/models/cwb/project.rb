@@ -83,7 +83,13 @@ module CWB
             folder = 'file:/'  + rel_path.parent.to_s
             created = ::File.ctime(path.to_s).to_datetime.to_s
             size = ::File.size(path.to_s).to_s
-            type = FileMagic.new.file(path.to_s).to_s.split(',')[0]
+            type_full = FileMagic.new.file(path.to_s)
+            type = type_full.to_s.split(',')[0]
+            if type =~ /image/
+              source = Magick::Image.read(path.to_s).first
+              thumb = source.resize_to_fill(240,240)
+              thumb.write 'derivatives/thumb_' + path.basename.to_s
+            end
             modified = ::File.mtime(path.to_s).to_datetime.to_s
             starred = 'false'
             tag = 'nil'

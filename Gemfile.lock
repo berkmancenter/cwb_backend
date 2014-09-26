@@ -138,6 +138,7 @@ GEM
       rdf-xsd (~> 1.1)
     rdf-xsd (1.1.1)
       rdf (~> 1.1)
+    rmagick (2.13.3)
     rspec-core (3.0.3)
       rspec-support (~> 3.0.0)
     rspec-expectations (3.0.3)
@@ -212,6 +213,7 @@ DEPENDENCIES
   rdf
   rdf-n3
   rdf-rdfxml
+  rmagick
   rspec-rails
   ruby-filemagic
   sparql-client

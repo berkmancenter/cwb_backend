@@ -22,6 +22,7 @@ gem 'mysql2'
 gem 'bcrypt'
 gem 'fabrication'
 gem 'ruby-filemagic'
+gem 'rmagick'
 
 gem 'dotenv-deployment'
 
