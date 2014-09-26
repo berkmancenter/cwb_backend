@@ -4,14 +4,24 @@ class TermsController < ApplicationController
   respond_to :json
 
   def index
-    render json: CWB::Term.nested_all(params[:project_id],params[:vocabulary_id])
+    proj_id = params[:project_id]
+    terms = CWB::Term.nested_all(proj_id, params[:vocabulary_id])
+    terms.each do |t|
+      files_query = CWB.sparql.select.graph(proj_id).where([:uri, PIM.tagged, RDF::URI(t[:id])])
+      count = files_query.execute.count
+      t[:tagged_count] = count
+    end
+    render json: terms
   end
 
   def show
-    if !(resource = CWB::Term.nested_find(params[:id], params[:project_id]))
-      render json: {}, status: 404
-    else
+    if resource = CWB::Term.nested_find(params[:id], params[:project_id])
+      files_query = CWB.sparql.select.graph(params[:project_id]).where([:uri, PIM.tagged, RDF::URI(params[:id])])
+      count = files_query.execute.count
+      resource[:tagged_count] = count
       render json: resource
+    else
+      render json: {}, status: 404
     end
   end
 
