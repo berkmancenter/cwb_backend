@@ -83,7 +83,7 @@ module CWB
             folder = 'file:/'  + rel_path.parent.to_s
             created = ::File.ctime(path.to_s).to_datetime.to_s
             size = ::File.size(path.to_s).to_s
-            type = FileMagic.new.file(path.to_s).to_s.split(',')[0]
+            type = CWB::File.get_file_description(path.to_s)
             modified = ::File.mtime(path.to_s).to_datetime.to_s
             starred = 'false'
             tag = 'nil'

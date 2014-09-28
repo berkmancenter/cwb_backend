@@ -63,5 +63,26 @@ module CWB
 
       single_delete(del_params)
     end
+
+    def self.get_file_description(path)
+      self.descriptions_whitelist.each {|definition|
+        if Pathname(path.to_s).extname.to_s.downcase == definition[:ext].to_s.downcase
+          return definition[:description].to_s
+        end
+      }
+
+      return FileMagic.new.file(path.to_s).to_s.split(',')[0]
+    end
+
+    def self.descriptions_whitelist
+      [
+        {
+          ext: '.max', description: '3D modeling/rendering file'
+        },
+        {
+          ext: '.3dm', description: '2D/3D model file (Rhino)'
+        }
+      ]
+    end
   end
 end
