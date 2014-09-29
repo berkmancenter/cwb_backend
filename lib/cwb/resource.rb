@@ -51,9 +51,7 @@ class CWB::Resource
     uri = URI.parse("http://localhost:8890/update/")
     http = Net::HTTP.new(uri.host, uri.port)
     postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
-    request = Net::HTTP::Post.new(uri.request_uri)
-    request.body = postdata
-    response = http.request(request)
+    res = http.post(uri.request_uri, postdata)
   end
 
   def self.turtle_create(params)

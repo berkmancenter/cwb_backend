@@ -12,30 +12,20 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    uri = RDF::URI(CWB::BASE_URI.to_s + project_params[:name])
     name = project_params[:name]
     descript = project_params[:description]
     path = project_params[:path] 
-    params_array = [uri, name, descript, path]
+    params_array = [name, descript, path]
+    email = @current_user.email
 
-    result = CWB::Project.project_init(params_array)
+    bg = CWB::BackgroundInit.new
 
-    if result[:success]
-      status = 200
-      response = {
-        id: uri.to_s,
-        name: project_params[:name],
-        description: project_params[:description],
-        path: project_params[:path]
-      }
+    if bg.validate!(*params_array, email)
+      CWB::BackgroundInit.perform_async(*params_array, email)
+      render json: {}, status: 200
     else
-      status = 400
-      response = {
-        error: result[:error]
-      }
+      render json: bg.errors, status: 400
     end
-
-    render json: response, status: status
   end
 
   def update

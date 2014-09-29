@@ -22,8 +22,11 @@ gem 'mysql2'
 gem 'bcrypt'
 gem 'fabrication'
 gem 'ruby-filemagic'
+gem 'httpclient'
 
 gem 'dotenv-deployment'
+
+gem 'sidekiq'
 
 group :development, :test do
   gem 'factory_girl_rails'
