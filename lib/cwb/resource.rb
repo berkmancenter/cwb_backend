@@ -177,7 +177,9 @@ class CWB::Resource
         tag_array = []
       elsif !subquery
         if container_array.last[:id] == attrs[:id]
-          container_array.last[:tag] << attrs[:tag].first unless attrs[:tag].empty? || container_array.last[:tag].include?(attrs[:tag].first)
+          if attrs[:tag]
+            container_array.last[:tag] << attrs[:tag].first unless  attrs[:tag].empty? || container_array.last[:tag].include?(attrs[:tag].first)
+          end
         else
           container_array << attrs
         end

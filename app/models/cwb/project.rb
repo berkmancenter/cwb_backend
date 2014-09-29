@@ -1,6 +1,8 @@
 require 'find'
 require 'rdf/nquads'
 require 'date'
+require "rmagick"
+require 'fileutils'
 
 module CWB
   class Project < CWB::Resource
