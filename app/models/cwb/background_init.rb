@@ -98,8 +98,8 @@ module CWB
 
       UserMailer.delay.init_completion_email(email, success=true)
     rescue => e
-      # CWB::Project.delete(@project)
-      # UserMailer.delay.init_completion_email(email, success=false)
+      CWB::Project.delete(@project.to_s)
+      UserMailer.delay.init_completion_email(email, success=false)
     end
   end
 end

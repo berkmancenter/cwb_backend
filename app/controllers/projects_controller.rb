@@ -46,6 +46,7 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
+    binding.pry
     CWB::Project.delete(params[:id])
     render json: { id: params[:id] }
   end
