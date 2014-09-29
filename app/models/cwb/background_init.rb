@@ -21,7 +21,7 @@ module CWB
 
       params = [uri, name, descript, path]
       project_dir = params[3]
-      project = params[0]
+      @project = params[0]
 
       # vocab init
       CWB::Vocabulary.fixtures.each do |fix|
@@ -31,7 +31,7 @@ module CWB
          end
         end
 
-        voc_params = [project, RDF::URI("#{@label}")]
+        voc_params = [@project, RDF::URI("#{@label}")]
 
         fix.each_value do |value|
           voc_params << value
@@ -48,7 +48,7 @@ module CWB
           end
         end
 
-        voc_params = [project, RDF::URI("#{@label}")]
+        voc_params = [@project, RDF::URI("#{@label}")]
 
         fix.each_value do |value|
           voc_params << value
@@ -79,7 +79,7 @@ module CWB
           parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
 
 
-          params = [project,uri,name,rel_path.to_s,parent]
+          params = [@project,uri,name,rel_path.to_s,parent]
           CWB::Folder.create(params)
         elsif ::File.ftype(path) == 'file'
           folder = 'file:/'  + rel_path.parent.to_s
@@ -91,16 +91,15 @@ module CWB
           tag = 'nil'
 
 
-          params = [project,uri,name,rel_path.to_s,created,size,type,folder,modified,starred,tag]
+          params = [@project,uri,name,rel_path.to_s,created,size,type,folder,modified,starred,tag]
           CWB::File.create(params)
         end
       end
 
-      UserMailer.delay.init_completion_email(email)
-
-      #TODO send success email
+      UserMailer.delay.init_completion_email(email, success=true)
     rescue => e
-      #TODO rollback and send failure email
+      # CWB::Project.delete(@project)
+      # UserMailer.delay.init_completion_email(email, success=false)
     end
   end
 end
