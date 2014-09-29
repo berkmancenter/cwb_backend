@@ -20,7 +20,7 @@ class ProjectsController < ApplicationController
 
     bg = CWB::BackgroundInit.new
 
-    if bg.validate!(*params_array, email)
+    if bg.validate!(*params_array)
       CWB::BackgroundInit.perform_async(*params_array)
       render json: {}, status: 200
     else
@@ -46,7 +46,6 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
-    binding.pry
     CWB::Project.delete(params[:id])
     render json: { id: params[:id] }
   end

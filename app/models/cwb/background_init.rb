@@ -19,9 +19,9 @@ module CWB
     def perform(name, descript, path, email)
       uri = RDF::URI(CWB::BASE_URI.to_s + name)
 
-      params = [uri, name, descript, path]
-      project_dir = params[3]
-      project = params[0]
+      project_params = [uri, name, descript, path]
+      project_dir = project_params[3]
+      project = project_params[0]
 
       # vocab init
       CWB::Vocabulary.fixtures.each do |fix|
@@ -57,8 +57,6 @@ module CWB
         CWB::Term.turtle_create(voc_params)
       end
 
-      CWB::Project.create(params)
-
       Find.find(Pathname(project_dir).to_s) do |path|
         next if path.eql? project_dir
 
@@ -79,8 +77,8 @@ module CWB
           parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
 
 
-          params = [project,uri,name,rel_path.to_s,parent]
-          CWB::Folder.create(params)
+          folder_params = [project,uri,name,rel_path.to_s,parent]
+          CWB::Folder.create(folder_params)
         elsif ::File.ftype(path) == 'file'
           folder = 'file:/'  + rel_path.parent.to_s
           created = ::File.ctime(path.to_s).to_datetime.to_s
@@ -101,10 +99,13 @@ module CWB
           tag = 'nil'
 
 
-          params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag]
-          CWB::File.create(params)
+          file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag]
+          CWB::File.create(file_params)
         end
       end
+
+      CWB::Project.create(project_params)
+
       if email
         UserMailer.delay.init_completion_email(email, success=true)
       end
