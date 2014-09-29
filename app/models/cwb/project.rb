@@ -1,6 +1,8 @@
 require 'find'
 require 'rdf/nquads'
 require 'date'
+require "rmagick"
+require 'fileutils'
 
 module CWB
   class Project < CWB::Resource
@@ -85,10 +87,12 @@ module CWB
             size = ::File.size(path.to_s).to_s
             type_full = FileMagic.new.file(path.to_s)
             type = type_full.to_s.split(',')[0]
+            project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
             if type =~ /image/
               source = Magick::Image.read(path.to_s).first
               thumb = source.resize_to_fill(240,240)
-              thumb.write 'derivatives/thumb_' + path.basename.to_s
+              FileUtils::mkdir_p "system/#{project_name}_thumbs"
+              thumb.write "system/#{project_name}_thumbs/thumb_" + path.basename.to_s
             end
             modified = ::File.mtime(path.to_s).to_datetime.to_s
             starred = 'false'

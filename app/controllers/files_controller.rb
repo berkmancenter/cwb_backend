@@ -106,6 +106,11 @@ class FilesController < ApplicationController
     render json: { success: 'Successfully taggedfile' }
   end
 
+  def get_thumb
+    query = CWB::File.nested_find(params[:file_id], params[:project_id], tagged=true)
+    send_file "system/#{params[:project_id].sub(CWB::BASE_URI.to_s, '')}" + '_thumbs/thumb_' + query[:name]
+  end
+
   private
 
   def file_params
