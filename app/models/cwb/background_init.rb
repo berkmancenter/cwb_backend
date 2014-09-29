@@ -21,7 +21,7 @@ module CWB
 
       params = [uri, name, descript, path]
       project_dir = params[3]
-      @project = params[0]
+      project = params[0]
 
       # vocab init
       CWB::Vocabulary.fixtures.each do |fix|
@@ -31,7 +31,7 @@ module CWB
          end
         end
 
-        voc_params = [@project, RDF::URI("#{@label}")]
+        voc_params = [project, RDF::URI("#{@label}")]
 
         fix.each_value do |value|
           voc_params << value
@@ -48,7 +48,7 @@ module CWB
           end
         end
 
-        voc_params = [@project, RDF::URI("#{@label}")]
+        voc_params = [project, RDF::URI("#{@label}")]
 
         fix.each_value do |value|
           voc_params << value
@@ -79,19 +79,29 @@ module CWB
           parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
 
 
-          params = [@project,uri,name,rel_path.to_s,parent]
+          params = [project,uri,name,rel_path.to_s,parent]
           CWB::Folder.create(params)
         elsif ::File.ftype(path) == 'file'
           folder = 'file:/'  + rel_path.parent.to_s
           created = ::File.ctime(path.to_s).to_datetime.to_s
           size = ::File.size(path.to_s).to_s
-          type = CWB::File.get_file_description(path.to_s)
+
+          type_full = FileMagic.new.file(path.to_s)
+          project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
+          if type_full =~ /image/
+            source = Magick::Image.read(path.to_s).first
+            thumb = source.resize_to_fill(240,240)
+            FileUtils::mkdir_p "system/#{project_name}_thumbs"
+            thumb.write "system/#{project_name}_thumbs/thumb_" + path.basename.to_s
+          end
+
+          file_descript = CWB::File.get_file_description(path.to_s)
           modified = ::File.mtime(path.to_s).to_datetime.to_s
           starred = 'false'
           tag = 'nil'
 
 
-          params = [@project,uri,name,rel_path.to_s,created,size,type,folder,modified,starred,tag]
+          params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag]
           CWB::File.create(params)
         end
       end
@@ -99,7 +109,7 @@ module CWB
         UserMailer.delay.init_completion_email(email, success=true)
       end
     rescue => e
-      CWB::Project.delete(@project.to_s)
+      CWB::Project.delete(project.to_s)
       if email
         UserMailer.delay.init_completion_email(email, success=false)
       end
