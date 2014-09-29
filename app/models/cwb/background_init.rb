@@ -96,9 +96,7 @@ module CWB
         end
       end
 
-      UserMailer.init_completion_email(email).deliver
-      puts email.inspect
-      puts 'email sent'
+      UserMailer.delay.init_completion_email(email)
 
       #TODO send success email
     rescue => e
