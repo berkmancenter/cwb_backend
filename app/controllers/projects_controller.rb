@@ -46,6 +46,9 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
+    project_name = params[:id].sub(CWB::BASE_URI.to_s, '')
+    FileUtils.rm_rf("system/#{project_name}_thumbs")
+
     CWB::Project.delete(params[:id])
     render json: { id: params[:id] }
   end
