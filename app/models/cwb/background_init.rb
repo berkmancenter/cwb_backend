@@ -22,6 +22,7 @@ module CWB
       project_params = [uri, name, descript, path]
       project_dir = project_params[3]
       project = project_params[0]
+      project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
 
       # vocab init
       CWB::Vocabulary.fixtures.each do |fix|
@@ -85,7 +86,6 @@ module CWB
           size = ::File.size(path.to_s).to_s
 
           type_full = FileMagic.new.file(path.to_s)
-          project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
           if type_full =~ /image/
             source = Magick::Image.read(path.to_s).first
             thumb = source.resize_to_fill(240,240)
@@ -107,12 +107,12 @@ module CWB
       CWB::Project.create(project_params)
 
       if email
-        UserMailer.delay.init_completion_email(email, success=true)
+        UserMailer.delay.init_completion_email(email, success=true, project_name)
       end
     rescue => e
       CWB::Project.delete(project.to_s)
       if email
-        UserMailer.delay.init_completion_email(email, success=false)
+        UserMailer.delay.init_completion_email(email, success=false, project_name)
       end
     end
   end
