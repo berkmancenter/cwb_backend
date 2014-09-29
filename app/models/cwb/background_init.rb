@@ -89,8 +89,9 @@ module CWB
           if type_full =~ /image/
             source = Magick::Image.read(path.to_s).first
             thumb = source.resize_to_fill(240,240)
-            FileUtils::mkdir_p "system/#{project_name}_thumbs"
-            thumb.write "system/#{project_name}_thumbs/thumb_" + path.basename.to_s
+            clean_name = project_name.gsub(' ', '_')
+            FileUtils::mkdir_p "system/#{clean_name}_thumbs"
+            thumb.write "system/#{clean_name}_thumbs/thumb_" + path.basename.to_s.gsub(' ', '_')
           end
 
           file_descript = CWB::File.get_file_description(path.to_s)

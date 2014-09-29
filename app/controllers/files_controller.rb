@@ -108,7 +108,7 @@ class FilesController < ApplicationController
 
   def get_thumb
     query = CWB::File.nested_find(params[:file_id], params[:project_id], tagged=true)
-    path = "system/#{params[:project_id].sub(CWB::BASE_URI.to_s, '')}" + '_thumbs/thumb_' + query[:name]
+    path = "system/#{params[:project_id].sub(CWB::BASE_URI.to_s, '').gsub(' ', '_')}" + '_thumbs/thumb_' + query[:name].to_s.gsub(' ', '_')
     if File.file?(path)
       send_file path
     else
