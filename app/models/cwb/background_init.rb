@@ -95,11 +95,14 @@ module CWB
           CWB::File.create(params)
         end
       end
-
-      UserMailer.delay.init_completion_email(email, success=true)
+      if email
+        UserMailer.delay.init_completion_email(email, success=true)
+      end
     rescue => e
       CWB::Project.delete(@project.to_s)
-      UserMailer.delay.init_completion_email(email, success=false)
+      if email
+        UserMailer.delay.init_completion_email(email, success=false)
+      end
     end
   end
 end
