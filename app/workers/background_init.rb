@@ -1,3 +1,6 @@
+require "rmagick"
+require 'fileutils'
+
 module CWB
   class BackgroundInit
     include Sidekiq::Worker
@@ -118,4 +121,3 @@ module CWB
     end
   end
 end
-    
