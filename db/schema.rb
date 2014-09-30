@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 20140925162514) do
     t.string   "file_untagged"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "terms_tagged"
+    t.text     "terms_tagged"
   end
 
 end
