@@ -23,7 +23,7 @@ gem 'bcrypt'
 gem 'fabrication'
 gem 'ruby-filemagic'
 gem 'httpclient'
-gem 'rmagick'
+gem 'rmagick', :require => 'RMagick'
 
 gem 'dotenv-deployment'
 

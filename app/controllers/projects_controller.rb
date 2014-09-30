@@ -18,10 +18,10 @@ class ProjectsController < ApplicationController
     email = @current_user.email || nil
     params_array = [name, descript, path, email]
 
-    bg = CWB::BackgroundInit.new
+    bg = BackgroundInit.new
 
     if bg.validate!(*params_array)
-      CWB::BackgroundInit.perform_async(*params_array)
+      BackgroundInit.perform_async(*params_array)
       render json: {}, status: 200
     else
       render json: bg.errors, status: 400
