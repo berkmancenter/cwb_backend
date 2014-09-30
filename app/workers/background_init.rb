@@ -1,7 +1,5 @@
-require "RMagick"
 require 'fileutils'
 
-module CWB
   class BackgroundInit
     include Sidekiq::Worker
 
@@ -94,7 +92,7 @@ module CWB
             thumb = source.resize_to_fill(240,240)
             clean_name = project_name.gsub(' ', '_')
             FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-            thumb.write "system/#{clean_name}_thumbs/thumb_" + path.basename.to_s.gsub(' ', '_')
+            thumb.write "system/#{clean_name}_thumbs/#{path.to_s.gsub('/', '-').gsub(' ', '_')}"
           end
 
           file_descript = CWB::File.get_file_description(path.to_s)
@@ -120,4 +118,3 @@ module CWB
       end
     end
   end
-end
