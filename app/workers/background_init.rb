@@ -91,7 +91,7 @@ class BackgroundInit
           thumb = source.resize_to_fill(240,240)
           clean_name = project_name.gsub(' ', '_')
           FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-          thumb.write "system/#{clean_name}_thumbs/#{path.to_s.gsub('/', '-').gsub(' ', '_')}"
+          thumb.write "system/#{clean_name}_thumbs/#{rel_path.to_s.gsub('/', '-').gsub(' ', '_')}"
         end
 
         file_descript = CWB::File.get_file_description(path.to_s)
