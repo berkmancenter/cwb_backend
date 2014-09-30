@@ -1,7 +1,7 @@
 require 'fileutils'
 
-  class BackgroundInit
-    include Sidekiq::Worker
+class BackgroundInit
+  include Sidekiq::Worker
 
   attr_reader :errors
 
@@ -75,29 +75,8 @@ require 'fileutils'
       next if rel_path.basename.to_s == '.DS_Store' # ignore Mac OS X artifacts
       next if rel_path.basename.to_s == 'Thumbs.db' # ignore Windows artifacts
 
-<<<<<<< HEAD
-          type_full = FileMagic.new.file(path.to_s)
-          if type_full =~ /image/
-            source = Magick::Image.read(path.to_s).first
-            thumb = source.resize_to_fill(240,240)
-            clean_name = project_name.gsub(' ', '_')
-            FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-            thumb.write "system/#{clean_name}_thumbs/#{path.to_s.gsub('/', '-').gsub(' ', '_')}"
-          end
-||||||| merged common ancestors
-          type_full = FileMagic.new.file(path.to_s)
-          if type_full =~ /image/
-            source = Magick::Image.read(path.to_s).first
-            thumb = source.resize_to_fill(240,240)
-            clean_name = project_name.gsub(' ', '_')
-            FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-            thumb.write "system/#{clean_name}_thumbs/thumb_" + path.basename.to_s.gsub(' ', '_')
-          end
-=======
       if ::File.ftype(path) == 'directory' && path.parent.to_s != '.'
         parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
->>>>>>> 8c85e35cfc12b750645fc7e972e775a4318a80ff
-
 
         folder_params = [project,uri,name,rel_path.to_s,parent]
         CWB::Folder.create(folder_params)
@@ -112,7 +91,7 @@ require 'fileutils'
           thumb = source.resize_to_fill(240,240)
           clean_name = project_name.gsub(' ', '_')
           FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-          thumb.write "system/#{clean_name}_thumbs/thumb_" + path.basename.to_s.gsub(' ', '_')
+          thumb.write "system/#{clean_name}_thumbs/#{path.to_s.gsub('/', '-').gsub(' ', '_')}"
         end
 
         file_descript = CWB::File.get_file_description(path.to_s)
@@ -138,3 +117,4 @@ require 'fileutils'
       UserMailer.delay.init_completion_email(email, success=false, project_name)
     end
   end
+end
