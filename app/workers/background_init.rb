@@ -3,89 +3,79 @@ require 'fileutils'
   class BackgroundInit
     include Sidekiq::Worker
 
-    attr_reader :errors
+  attr_reader :errors
 
-    def initialize
-      @errors = []
+  def initialize
+    @errors = []
+  end
+
+  def validate!(name, descript, path, email)
+    if !::File.directory?(path)
+      @errors << "Path must be a valid directory"
     end
 
-    def validate!(name, descript, path, email)
-      if !::File.directory?(path)
-        @errors << "Path must be a valid directory"
+    return @errors.empty?
+  end
+
+  def perform(name, descript, path, email)
+    uri = RDF::URI(CWB::BASE_URI.to_s + name)
+
+    project_params = [uri, name, descript, path]
+    project_dir = project_params[3]
+    project = project_params[0]
+    project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
+
+    # vocab init
+    CWB::Vocabulary.fixtures.each do |fix|
+      fix.each do |key,val|
+       if key == :id
+        @label = val
+       end
       end
 
-      return @errors.empty?
+      voc_params = [project, RDF::URI("#{@label}")]
+
+      fix.each_value do |value|
+        voc_params << value
+      end
+
+      CWB::Vocabulary.turtle_create(voc_params)
     end
 
-    def perform(name, descript, path, email)
-      uri = RDF::URI(CWB::BASE_URI.to_s + name)
-
-      project_params = [uri, name, descript, path]
-      project_dir = project_params[3]
-      project = project_params[0]
-      project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
-
-      # vocab init
-      CWB::Vocabulary.fixtures.each do |fix|
-        fix.each do |key,val|
-         if key == :id
-          @label = val
-         end
+    # term init
+    CWB::Term.fixtures.each do |fix|
+      fix.each do |key,val|
+        if key == :id
+          @label = val + UUIDTools::UUID.timestamp_create
         end
-
-        voc_params = [project, RDF::URI("#{@label}")]
-
-        fix.each_value do |value|
-          voc_params << value
-        end
-
-        CWB::Vocabulary.turtle_create(voc_params)
       end
 
-      # term init
-      CWB::Term.fixtures.each do |fix|
-        fix.each do |key,val|
-          if key == :id
-            @label = val + UUIDTools::UUID.timestamp_create
-          end
-        end
+      voc_params = [project, RDF::URI("#{@label}")]
 
-        voc_params = [project, RDF::URI("#{@label}")]
-
-        fix.each_value do |value|
-          voc_params << value
-        end
-
-        CWB::Term.turtle_create(voc_params)
+      fix.each_value do |value|
+        voc_params << value
       end
 
-      Find.find(Pathname(project_dir).to_s) do |path|
-        next if path.eql? project_dir
+      CWB::Term.turtle_create(voc_params)
+    end
 
-        project_root = Pathname(project_dir).basename
-        path = Pathname(path)
-        name = ::File.basename(path.to_s)
+    Find.find(Pathname(project_dir).to_s) do |path|
+      next if path.eql? project_dir
 
-        rel_path = Pathname(path.to_s[(project_dir.to_s.size-project_root.to_s.size)..-1])
-        is_toplevel = name == path.to_s[(project_dir.to_s.size+1)..-1]
+      project_root = Pathname(project_dir).basename
+      path = Pathname(path)
+      name = ::File.basename(path.to_s)
 
-        uri = RDF::URI('file:/' + rel_path.to_s)
+      rel_path = Pathname(path.to_s[(project_dir.to_s.size-project_root.to_s.size)..-1])
+      is_toplevel = name == path.to_s[(project_dir.to_s.size+1)..-1]
 
-        next if is_toplevel && !path.directory? # we don't support files in the root directory
-        next if rel_path.basename.to_s == '.DS_Store' # ignore Mac OS X artifacts
-        next if rel_path.basename.to_s == 'Thumbs.db' # ignore Windows artifacts
+      uri = RDF::URI('file:/' + rel_path.to_s)
 
-        if ::File.ftype(path) == 'directory' && path.parent.to_s != '.'
-          parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
+      next if is_toplevel && !path.directory? # we don't support files in the root directory
+      next if rel_path.basename.to_s == '.DS_Store' # ignore Mac OS X artifacts
+      next if rel_path.basename.to_s == 'Thumbs.db' # ignore Windows artifacts
 
-
-          folder_params = [project,uri,name,rel_path.to_s,parent]
-          CWB::Folder.create(folder_params)
-        elsif ::File.ftype(path) == 'file'
-          folder = 'file:/'  + rel_path.parent.to_s
-          created = ::File.ctime(path.to_s).to_datetime.to_s
-          size = ::File.size(path.to_s).to_s
-
+<<<<<<< HEAD
           type_full = FileMagic.new.file(path.to_s)
           if type_full =~ /image/
             source = Magick::Image.read(path.to_s).first
@@ -94,27 +84,57 @@ require 'fileutils'
             FileUtils::mkdir_p "system/#{clean_name}_thumbs"
             thumb.write "system/#{clean_name}_thumbs/#{path.to_s.gsub('/', '-').gsub(' ', '_')}"
           end
+||||||| merged common ancestors
+          type_full = FileMagic.new.file(path.to_s)
+          if type_full =~ /image/
+            source = Magick::Image.read(path.to_s).first
+            thumb = source.resize_to_fill(240,240)
+            clean_name = project_name.gsub(' ', '_')
+            FileUtils::mkdir_p "system/#{clean_name}_thumbs"
+            thumb.write "system/#{clean_name}_thumbs/thumb_" + path.basename.to_s.gsub(' ', '_')
+          end
+=======
+      if ::File.ftype(path) == 'directory' && path.parent.to_s != '.'
+        parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
+>>>>>>> 8c85e35cfc12b750645fc7e972e775a4318a80ff
 
-          file_descript = CWB::File.get_file_description(path.to_s)
-          modified = ::File.mtime(path.to_s).to_datetime.to_s
-          starred = 'false'
-          tag = 'nil'
 
+        folder_params = [project,uri,name,rel_path.to_s,parent]
+        CWB::Folder.create(folder_params)
+      elsif ::File.ftype(path) == 'file'
+        folder = 'file:/'  + rel_path.parent.to_s
+        created = ::File.ctime(path.to_s).to_datetime.to_s
+        size = ::File.size(path.to_s).to_s
 
-          file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag]
-          CWB::File.create(file_params)
+        type_full = FileMagic.new.file(path.to_s)
+        if type_full =~ /image/
+          source = Magick::Image.read(path.to_s).first
+          thumb = source.resize_to_fill(240,240)
+          clean_name = project_name.gsub(' ', '_')
+          FileUtils::mkdir_p "system/#{clean_name}_thumbs"
+          thumb.write "system/#{clean_name}_thumbs/thumb_" + path.basename.to_s.gsub(' ', '_')
         end
-      end
 
-      CWB::Project.create(project_params)
+        file_descript = CWB::File.get_file_description(path.to_s)
+        modified = ::File.mtime(path.to_s).to_datetime.to_s
+        starred = 'false'
+        tag = 'nil'
 
-      if email
-        UserMailer.delay.init_completion_email(email, success=true, project_name)
+
+        file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag]
+        CWB::File.create(file_params)
       end
-    rescue => e
-      CWB::Project.delete(project.to_s)
-      if email
-        UserMailer.delay.init_completion_email(email, success=false, project_name)
-      end
+    end
+
+    CWB::Project.create(project_params)
+
+    if email
+      UserMailer.delay.init_completion_email(email, success=true, project_name)
+    end
+  rescue => e
+    logger.debug e.inspect
+    CWB::Project.delete(project.to_s)
+    if email
+      UserMailer.delay.init_completion_email(email, success=false, project_name)
     end
   end
