@@ -9,6 +9,8 @@ It's recommended to install the front and back-end CWB applications in sibling d
 
 After cloning the project, run `bundle install`.
 
+Create `database.yml` and `rdf_database.yml` files in the `config` directory, using the existing `*.example` files as a reference.
+
 If you haven't already, you'll need to [install and setup mysql](http://dev.mysql.com/doc/).
 
 Then setup the app's mysql databases with:
