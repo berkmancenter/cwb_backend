@@ -85,13 +85,14 @@ class BackgroundInit
         created = ::File.ctime(path.to_s).to_datetime.to_s
         size = ::File.size(path.to_s).to_s
 
-        type_full = FileMagic.new.file(path.to_s)
-        if type_full =~ /image/
+        if %w(.jpg .jpeg .png .gif .tif).include?(Pathname(path.to_s).extname.to_s.downcase)
           source = Magick::Image.read(path.to_s).first
+          source.format = 'PNG'
           thumb = source.resize_to_fill(240,240)
           clean_name = project_name.gsub(' ', '_')
           FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-          thumb.write "system/#{clean_name}_thumbs/#{rel_path.to_s.gsub('/', '-').gsub(' ', '_')}"
+          thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
+          thumb.write "system/#{clean_name}_thumbs/#{thumb_name}"
         end
 
         file_descript = CWB::File.get_file_description(path.to_s)
@@ -111,9 +112,15 @@ class BackgroundInit
       UserMailer.delay.init_completion_email(email, success=true, project_name)
     end
   rescue => e
+    logger.error e.message
+    logger.error e.backtrace.join("\n")
     CWB::Project.delete(project.to_s)
     if email
       UserMailer.delay.init_completion_email(email, success=false, project_name)
     end
+  end
+
+  def self.scrub_path_to_png(path)
+    path.to_s.gsub('/', '-').gsub(' ', '_').gsub(/(\.jpg|\.jpeg|\.png|\.gif|\.tif)$/i, '.png')
   end
 end
