@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   resources :projects,     id: /[^\/]*/ do
     get 'download', to: 'projects#download'
+    get 'derivatives_download', to: 'projects#derivatives_download'
     resources :folders,    id: /[^\/]*/
     resources :files, except: :destroy,     id: /[^\/]*/ do
       get '/thumb', to: 'files#get_thumb'

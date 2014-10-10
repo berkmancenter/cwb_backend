@@ -81,6 +81,18 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def derivatives_download
+    project_name = Rails.root.join('derivatives', params[:project_id].sub(CWB::BASE_URI.to_s, '')).to_s
+
+    CWB::Project.zip_derivative(project_name)
+    #send derives to endpoint
+    file_path = Rails.root.join('derivatives', 'derivatives.zip')
+    File.open(file_path, 'r') do |f|
+        send_data f.read, type: 'application/zip'
+    end
+    FileUtils.rm(Rails.root.join('derivatives', 'derivatives.zip'))
+  end
+
   private
 
   def project_params

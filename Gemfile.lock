@@ -164,6 +164,7 @@ GEM
       rspec-support (~> 3.0.0)
     rspec-support (3.0.3)
     ruby-filemagic (0.6.1)
+    rubyzip (1.1.6)
     sidekiq (3.2.5)
       celluloid (= 0.15.2)
       connection_pool (>= 2.0.0)
@@ -203,6 +204,8 @@ GEM
     tzinfo (1.2.1)
       thread_safe (~> 0.1)
     uuidtools (2.1.4)
+    zip-zip (0.3)
+      rubyzip (>= 1.0.0)
 
 PLATFORMS
   ruby
@@ -232,7 +235,9 @@ DEPENDENCIES
   rmagick
   rspec-rails
   ruby-filemagic
+  rubyzip
   sidekiq
   sparql-client
   thin
   uuidtools
+  zip-zip
