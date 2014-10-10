@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :folders,    id: /[^\/]*/
     resources :files, except: :destroy,     id: /[^\/]*/ do
       get '/thumb', to: 'files#get_thumb'
+      post '/upload_derivative', to: 'files#upload_derivative'
     end
     put '/tag_files', to: 'files#tag_files'
     put '/star_file/:id', to: 'files#mark_starred', id: /[^\/]*/

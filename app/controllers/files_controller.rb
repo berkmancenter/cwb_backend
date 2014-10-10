@@ -117,9 +117,38 @@ class FilesController < ApplicationController
     end
   end
 
+  def upload_derivative
+    upload_file = file_params[:upload]
+    parent_file = params[:file_id]
+    project = params[:project_id].sub(CWB::BASE_URI.to_s, '')
+    size = upload_file.tempfile.size.to_s
+    FileUtils::mkdir_p "derivatives/#{project}"
+    upload_path = "derivatives/#{project}/"
+    upload_name = Time.now.strftime("%y-%m-%d_%H-%M_") + upload_file.original_filename
+    if upload_file
+      CWB::File.upload_file(upload_file.tempfile, upload_path, upload_name)
+      render json: { success: 'yay' }, status: 200
+    end
+    query = CWB::File.nested_find(params[:file_id], params[:project_id], tagged=true)
+
+    project_name = params[:project_id]
+    uri = RDF::URI('file:/' +  upload_path + upload_name)
+    name = upload_file.original_filename
+    rel_path = upload_path + upload_name
+    created = upload_file.tempfile.ctime.to_s
+    file_descript = FileMagic.new.file(rel_path).to_s.split(',')[0]
+    folder = project
+    modified = upload_file.tempfile.mtime.to_s
+    starred = 'false'
+    tag = 'nil'
+    d = parent_file
+    file_params = [project_name,uri,name,rel_path,created,size,file_descript,folder,modified,starred,tag,d]
+    CWB::File.create(file_params)
+  end
+
   private
 
   def file_params
-    params.require(:file).permit(ids: [], tags: [])
+    params.require(:file).permit(:upload, ids: [], tags: [])
   end
 end

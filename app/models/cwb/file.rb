@@ -2,7 +2,7 @@ module CWB
   class File < CWB::Resource
     def self.graph_pattern(
       _project=nil,uri=nil,name=nil,path=nil,
-      created=nil,size=nil,type=nil,folder=nil,modified=nil,starred=nil,tag=nil
+      created=nil,size=nil,type=nil,folder=nil,modified=nil,starred=nil,tag=nil,derivative=nil
     )
       [
         [uri||:uri, RDF.type, PIM.File],
@@ -14,7 +14,8 @@ module CWB
         [uri||:uri, PIM.colocation, folder||:folder],
         [uri||:uri, RDF::DC.modified, modified||:modified],
         [uri||:uri, PIM.isStarred, starred||:starred],
-        [uri||:uri, PIM.tagged, tag||:tag]
+        [uri||:uri, PIM.tagged, tag||:tag],
+        [uri||:uri, PIM.derivativeOf, derivative||:derivative]
       ]
     end
 
@@ -45,7 +46,7 @@ module CWB
       uri = RDF::URI(file_id)
       tag = RDF::URI(tag_id)
 
-      
+
 
       del_params = [project, uri, PIM.tagged, tag]
       create_params = [project, uri, PIM.tagged, tag]
@@ -83,6 +84,14 @@ module CWB
           ext: '.3dm', description: '2D/3D model file (Rhino)'
         }
       ]
+    end
+
+    def self.upload_file(upload, path, name)
+      upload.rewind
+      path = path  + name
+      ::File.open(path, 'wb') do|f|
+        f.write(upload.read)
+      end
     end
   end
 end

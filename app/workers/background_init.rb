@@ -99,9 +99,9 @@ class BackgroundInit
         modified = ::File.mtime(path.to_s).to_datetime.to_s
         starred = 'false'
         tag = 'nil'
+        derivative = 'false'
 
-
-        file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag]
+        file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag,derivative]
         CWB::File.create(file_params)
       end
     end
