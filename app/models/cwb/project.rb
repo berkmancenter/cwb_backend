@@ -21,7 +21,7 @@ module CWB
       zip_dir = Rails.root.join('derivatives', 'derivatives.zip').to_s
       Zip::ZipFile.open(zip_dir, Zip::ZipFile::CREATE)do |zipfile|
         Find.find(dir) do |path|
-          Find.prune if File.basename(path)[0] == ?.
+          Find.prune if ::File.basename(path)[0] == ?.
           dest = /#{dir}\/(\w.*)/.match(path)
           # Skip files if they exists
           begin

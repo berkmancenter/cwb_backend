@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module CWB
   class File < CWB::Resource
     def self.graph_pattern(
@@ -92,6 +94,30 @@ module CWB
       ::File.open(path, 'wb') do|f|
         f.write(upload.read)
       end
+    end
+
+    def self.file_creation(project, uri, name, path, rel_path, project_name)
+      folder = 'file:/'  + Pathname(rel_path).parent.to_s
+      created = ::File.ctime(path.to_s).to_datetime.to_s
+      size = ::File.size(path.to_s).to_s
+
+      if %w(.jpg .jpeg .png .gif .tif).include?(Pathname(path.to_s).extname.to_s.downcase)
+        source = Magick::Image.read(path.to_s).first
+        source.format = 'PNG'
+        thumb = source.resize_to_fill(240,240)
+        clean_name = project_name.gsub(' ', '_')
+        FileUtils::mkdir_p "system/#{clean_name}_thumbs"
+        thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
+        thumb.write "system/#{clean_name}_thumbs/#{thumb_name}"
+      end
+      file_descript = CWB::File.get_file_description(rel_path)
+      modified = ::File.mtime(path.to_s).to_datetime.to_s
+      starred = 'false'
+      tag = 'nil'
+      derivative = 'false'
+
+      file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag,derivative]
+      CWB::File.create(file_params)
     end
   end
 end
