@@ -142,8 +142,8 @@ class FilesController < ApplicationController
     modified = upload_file.tempfile.mtime.to_s
     starred = 'false'
     tag = 'nil'
-    d = parent_file
-    CWB::File.file_creation(project, uri, name, rel_path, rel_path, project_name)
+    derivative = parent_file
+    CWB::File.file_creation(project, uri, name, rel_path, rel_path, project_name, derivative)
   end
 
   private

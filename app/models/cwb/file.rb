@@ -96,7 +96,7 @@ module CWB
       end
     end
 
-    def self.file_creation(project, uri, name, path, rel_path, project_name)
+    def self.file_creation(project, uri, name, path, rel_path, project_name, derivative=nil)
       folder = 'file:/'  + Pathname(rel_path).parent.to_s
       created = ::File.ctime(path.to_s).to_datetime.to_s
       size = ::File.size(path.to_s).to_s
@@ -114,7 +114,7 @@ module CWB
       modified = ::File.mtime(path.to_s).to_datetime.to_s
       starred = 'false'
       tag = 'nil'
-      derivative = 'false'
+      derivative = 'false' if derivative.nil? 
 
       file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag,derivative]
       CWB::File.create(file_params)
