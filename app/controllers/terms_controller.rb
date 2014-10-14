@@ -31,9 +31,9 @@ class TermsController < ApplicationController
     project = RDF::URI(params[:project_id])
     vocab = RDF::URI(params[:vocabulary_id])
     desc = term_params[:description]
+    locked = 'false'
 
-
-    params = [project, uri, label, vocab, desc]
+    params = [project, uri, label, vocab, desc, locked]
 
     if !(resource = CWB::Term.turtle_create(params))
     #def self.graph_pattern(_project=nil,uri=nil,label=nil,vocab=nil,description=nil)
