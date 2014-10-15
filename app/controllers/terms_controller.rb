@@ -53,10 +53,11 @@ class TermsController < ApplicationController
       vocab = RDF::URI(params[:vocabulary_id])
       label = resource[:label].gsub(' ', '__')
       desc = resource[:description]
+      locked = resource[:locked]
 
       files = CWB::Term.file_tag_delete(project_uri, old_uri)
 
-      del_params = [project_uri,old_uri,label,vocab,desc]
+      del_params = [project_uri,old_uri,label,vocab,desc,locked]
       CWB::Term.term_delete(del_params)
       
       label = term_params[:label].gsub(' ', '__')
@@ -64,10 +65,11 @@ class TermsController < ApplicationController
       project_uri = RDF::URI(params[:project_id])
       vocab = RDF::URI(params[:vocabulary_id])
       desc = term_params[:description]
+      locked = 'false'
 
       CWB::Term.file_tag_create(project_uri, new_uri, files)
 
-      create_params = [project_uri, new_uri, label, vocab, desc]
+      create_params = [project_uri, new_uri, label, vocab, desc, locked]
       CWB::Term.turtle_create(create_params)
 
       response = {
@@ -75,6 +77,7 @@ class TermsController < ApplicationController
         vocabulary_id: vocab.to_s,
         label: label,
         description: desc,
+        locked: locked
       }
 
       render json: response
