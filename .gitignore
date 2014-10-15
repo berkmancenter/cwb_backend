@@ -19,6 +19,8 @@
 public/static
 *.orig
 
+derivatives/*
+
 # Ignore vim temp and backup files
 *~
 *.swp
