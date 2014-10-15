@@ -91,8 +91,9 @@ class TermsController < ApplicationController
     vocab = RDF::URI(params[:vocabulary_id])
     label = resource[:label].gsub(' ', '__')
     desc = resource[:description]
+    locked = resource[:locked]
 
-    del_params = [project_uri,uri,label,vocab,desc]
+    del_params = [project_uri,uri,label,vocab,desc,locked]
 
     if resource = CWB::Term.file_tag_delete(project_uri, uri) && CWB::Term.term_delete(del_params)
       render json: resource
