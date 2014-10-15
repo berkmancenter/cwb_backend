@@ -85,7 +85,7 @@ class BackgroundInit
         created = ::File.ctime(path.to_s).to_datetime.to_s
         size = ::File.size(path.to_s).to_s
 
-        if %w(.jpg .jpeg .png .gif .tif).include?(Pathname(path.to_s).extname.to_s.downcase)
+        if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
           source = Magick::Image.read(path.to_s).first
           source.format = 'PNG'
           thumb = source.resize_to_fill(240,240)
@@ -121,6 +121,6 @@ class BackgroundInit
   end
 
   def self.scrub_path_to_png(path)
-    path.to_s.gsub('/', '-').gsub(' ', '_').gsub(/(\.jpg|\.jpeg|\.png|\.gif|\.tif)$/i, '.png')
+    path.to_s.gsub('/', '-').gsub(' ', '_').gsub(/(\.jpg|\.jpeg|\.png|\.gif|\.tif|\.pdf)$/i, '.png')
   end
 end
