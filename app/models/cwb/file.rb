@@ -101,7 +101,7 @@ module CWB
       created = ::File.ctime(path.to_s).to_datetime.to_s
       size = ::File.size(path.to_s).to_s
 
-      if %w(.jpg .jpeg .png .gif .tif).include?(Pathname(path.to_s).extname.to_s.downcase)
+      if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
         source = Magick::Image.read(path.to_s).first
         source.format = 'PNG'
         thumb = source.resize_to_fill(240,240)

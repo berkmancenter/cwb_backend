@@ -99,6 +99,6 @@ class BackgroundInit
   end
 
   def self.scrub_path_to_png(path)
-    path.to_s.gsub('/', '-').gsub(' ', '_').gsub(/(\.jpg|\.jpeg|\.png|\.gif|\.tif)$/i, '.png')
+    path.to_s.gsub('/', '-').gsub(' ', '_').gsub(/(\.jpg|\.jpeg|\.png|\.gif|\.tif|\.pdf)$/i, '.png')
   end
 end
