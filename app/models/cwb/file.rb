@@ -110,7 +110,7 @@ module CWB
         thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
         thumb.write "system/#{clean_name}_thumbs/#{thumb_name}"
       end
-      file_descript = CWB::File.get_file_description(rel_path)
+      file_descript = CWB::File.get_file_description(path.to_s)
       modified = ::File.mtime(path.to_s).to_datetime.to_s
       starred = 'false'
       tag = 'nil'
