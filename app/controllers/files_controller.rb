@@ -118,10 +118,10 @@ class FilesController < ApplicationController
   end
 
   def upload_derivative
-    upload_file = file_params[:upload]
-    parent_file = params[:file_id]
+    upload_file = params[:upload]
+    parent_file = params[:file_id].to_s.gsub('file:/', '')
     project_name = params[:project_id].sub(CWB::BASE_URI.to_s, '')
-    size = upload_file.tempfile.size.to_s
+
     FileUtils::mkdir_p "derivatives/#{project_name}"
     upload_path = "derivatives/#{project_name}/"
     upload_name = Time.now.strftime("%y-%m-%d_%H-%M_") + upload_file.original_filename
@@ -130,25 +130,19 @@ class FilesController < ApplicationController
     else
       render json: { error: 'Derivative upload failed' }, status: 500 
     end
-    query = CWB::File.nested_find(params[:file_id], params[:project_id], tagged=true)
 
+    path = upload_path + upload_name
+    rel_path = ::File.dirname(parent_file).to_s + '/' + upload_name
     project = params[:project_id]
-    uri = RDF::URI('file:/' +  upload_path + upload_name)
+    uri = RDF::URI('file:/' +  rel_path)
     name = upload_file.original_filename
-    rel_path = upload_path + upload_name
-    created = upload_file.tempfile.ctime.to_s
-    file_descript = FileMagic.new.file(rel_path).to_s.split(',')[0]
-    folder = project_name
-    modified = upload_file.tempfile.mtime.to_s
-    starred = 'false'
-    tag = 'nil'
     derivative = parent_file
-    CWB::File.file_creation(project, uri, name, rel_path, rel_path, project_name, derivative)
+    CWB::File.file_creation(project, uri, name, path, rel_path, project_name, derivative)
   end
 
   private
 
   def file_params
-    params.require(:file).permit(:upload, ids: [], tags: [])
+    params.require(:file).permit(ids: [], tags: [])
   end
 end
