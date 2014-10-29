@@ -18,6 +18,7 @@ class BackgroundInit
   end
 
   def perform(name, descript, path, email)
+    logger.info "starting project creation job"
     uri = RDF::URI(CWB::BASE_URI.to_s + name)
 
     project_params = [uri, name, descript, path]
@@ -25,7 +26,7 @@ class BackgroundInit
     project = project_params[0]
     project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
 
-
+    logger.info "building vocabularies from fixtures"
     # vocab init
     CWB::Vocabulary.fixtures.each do |fix|
       fix.each do |key,val|
@@ -43,6 +44,7 @@ class BackgroundInit
       CWB::Vocabulary.turtle_create(voc_params)
     end
 
+    logger.info "building terms from fixtures"
     # term init
     CWB::Term.fixtures.each do |fix|
       fix.each do |key,val|
@@ -60,6 +62,7 @@ class BackgroundInit
       CWB::Term.turtle_create(voc_params)
     end
 
+    logger.info "building project"
     Find.find(Pathname(project_dir).to_s) do |path|
       next if path.eql? project_dir
 
@@ -77,23 +80,33 @@ class BackgroundInit
       if ::File.ftype(path) == 'directory' && path.parent.to_s != '.'
         parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
         folder_params = [project,uri,name,rel_path.to_s,parent]
+        logger.info "creating folder"
+        logger.info "#{folder_params}"
         CWB::Folder.create(folder_params)
       elsif ::File.ftype(path) == 'file'
+        logger.info "creating file"
+        logger.info "#{[project, uri, name, path, rel_path, project_name]}"
         CWB::File.file_creation(project, uri, name, path, rel_path, project_name)
       end
 
     end
 
+    logger.info "creating project"
     CWB::Project.create(project_params)
 
     if email
+      logger.info "sending success notification"
       UserMailer.delay.init_completion_email(email, success=true, project_name)
     end
   rescue => e
-    # logger.error e.message
-    # logger.error e.backtrace.join("\n")
+    logger.info "error rescued!"
+    logger.info e.message
+    logger.info e.backtrace.join("\n")
+
+    logger.info "deleting project"
     CWB::Project.delete(project.to_s)
     if email
+      logger.info "sending failure notification"
       UserMailer.delay.init_completion_email(email, success=false, project_name)
     end
   end
