@@ -90,8 +90,8 @@ class BackgroundInit
       UserMailer.delay.init_completion_email(email, success=true, project_name)
     end
   rescue => e
-    logger.error e.message
-    logger.error e.backtrace.join("\n")
+    # logger.error e.message
+    # logger.error e.backtrace.join("\n")
     CWB::Project.delete(project.to_s)
     if email
       UserMailer.delay.init_completion_email(email, success=false, project_name)
