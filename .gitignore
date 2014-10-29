@@ -7,6 +7,8 @@
 # Ignore bundler config.
 /.bundle
 
+derivatives/*
+
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
@@ -18,6 +20,8 @@
 /tmp
 public/static
 *.orig
+
+derivatives/*
 
 # Ignore vim temp and backup files
 *~

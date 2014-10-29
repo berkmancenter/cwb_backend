@@ -24,6 +24,8 @@ gem 'fabrication'
 gem 'ruby-filemagic'
 gem 'httpclient'
 gem 'rmagick', require: 'RMagick'
+gem 'rubyzip'
+gem 'zip-zip'
 
 gem 'dotenv-deployment'
 

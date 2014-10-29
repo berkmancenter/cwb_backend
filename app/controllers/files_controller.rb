@@ -117,6 +117,29 @@ class FilesController < ApplicationController
     end
   end
 
+  def upload_derivative
+    upload_file = params[:upload]
+    parent_file = params[:file_id].to_s.gsub('file:/', '')
+    project_name = params[:project_id].sub(CWB::BASE_URI.to_s, '')
+
+    FileUtils::mkdir_p "derivatives/#{project_name}"
+    upload_path = "derivatives/#{project_name}/"
+    upload_name = Time.now.strftime("%y-%m-%d_%H-%M_") + upload_file.original_filename
+    if CWB::File.upload_file(upload_file.tempfile, upload_path, upload_name)
+      render json: { success: 'Derivative successfully uploaded' }, status: 200
+    else
+      render json: { error: 'Derivative upload failed' }, status: 500 
+    end
+
+    path = upload_path + upload_name
+    rel_path = ::File.dirname(parent_file).to_s + '/' + upload_name
+    project = params[:project_id]
+    uri = RDF::URI('file:/' +  rel_path)
+    name = upload_file.original_filename
+    derivative = parent_file
+    CWB::File.file_creation(project, uri, name, path, rel_path, project_name, derivative)
+  end
+
   private
 
   def file_params
