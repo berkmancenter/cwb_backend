@@ -1,8 +1,10 @@
+require 'fileutils'
+
 module CWB
   class File < CWB::Resource
     def self.graph_pattern(
       _project=nil,uri=nil,name=nil,path=nil,
-      created=nil,size=nil,type=nil,folder=nil,modified=nil,starred=nil,tag=nil
+      created=nil,size=nil,type=nil,folder=nil,modified=nil,starred=nil,tag=nil,derivative=nil
     )
       [
         [uri||:uri, RDF.type, PIM.File],
@@ -14,7 +16,8 @@ module CWB
         [uri||:uri, PIM.colocation, folder||:folder],
         [uri||:uri, RDF::DC.modified, modified||:modified],
         [uri||:uri, PIM.isStarred, starred||:starred],
-        [uri||:uri, PIM.tagged, tag||:tag]
+        [uri||:uri, PIM.tagged, tag||:tag],
+        [uri||:uri, PIM.derivativeOf, derivative||:derivative]
       ]
     end
 
@@ -45,7 +48,7 @@ module CWB
       uri = RDF::URI(file_id)
       tag = RDF::URI(tag_id)
 
-      
+
 
       del_params = [project, uri, PIM.tagged, tag]
       create_params = [project, uri, PIM.tagged, tag]
@@ -83,6 +86,38 @@ module CWB
           ext: '.3dm', description: '2D/3D model file (Rhino)'
         }
       ]
+    end
+
+    def self.upload_file(upload, path, name)
+      upload.rewind
+      path = path  + name
+      ::File.open(path, 'wb') do|f|
+        f.write(upload.read)
+      end
+    end
+
+    def self.file_creation(project, uri, name, path, rel_path, project_name, derivative=nil)
+      folder = 'file:/'  + Pathname(rel_path).parent.to_s
+      created = ::File.ctime(path.to_s).to_datetime.to_s
+      size = ::File.size(path.to_s).to_s
+
+      if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
+        source = Magick::Image.read(path.to_s).first
+        source.format = 'PNG'
+        thumb = source.resize_to_fill(240,240)
+        clean_name = project_name.gsub(' ', '_')
+        FileUtils::mkdir_p "system/#{clean_name}_thumbs"
+        thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
+        thumb.write "system/#{clean_name}_thumbs/#{thumb_name}"
+      end
+      file_descript = CWB::File.get_file_description(path.to_s)
+      modified = ::File.mtime(path.to_s).to_datetime.to_s
+      starred = 'false'
+      tag = 'nil'
+      derivative = 'false' if derivative.nil? 
+
+      file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag,derivative]
+      CWB::File.create(file_params)
     end
   end
 end

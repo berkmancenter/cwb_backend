@@ -48,6 +48,7 @@ class ProjectsController < ApplicationController
   def destroy
     project_name = params[:id].sub(CWB::BASE_URI.to_s, '')
     FileUtils.rm_rf("system/#{project_name}_thumbs")
+    FileUtils.rm_rf("derivatives/#{project_name}")
 
     CWB::Project.delete(params[:id])
     render json: { id: params[:id] }
@@ -79,6 +80,19 @@ class ProjectsController < ApplicationController
                 type: 'application/n-triples',
                 disposition: 'attachment'
     end
+  end
+
+  def derivatives_download
+    project = CWB::Project.find(params[:project_id])
+    project_name = Rails.root.join('derivatives', params[:project_id].sub(CWB::BASE_URI.to_s, '')).to_s
+
+    CWB::Project.zip_derivative(project_name)
+    #send derives to endpoint
+    file_path = Rails.root.join('derivatives', 'derivatives.zip')
+    File.open(file_path, 'r') do |f|
+        send_data f.read, filename: "#{project[:name]}_#{Date.today}_derivatives.zip", type: 'application/zip'
+    end
+    FileUtils.rm(Rails.root.join('derivatives', 'derivatives.zip'))
   end
 
   private

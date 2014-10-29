@@ -25,6 +25,7 @@ class BackgroundInit
     project = project_params[0]
     project_name = project.to_s.sub(CWB::BASE_URI.to_s, '')
 
+
     # vocab init
     CWB::Vocabulary.fixtures.each do |fix|
       fix.each do |key,val|
@@ -65,10 +66,8 @@ class BackgroundInit
       project_root = Pathname(project_dir).basename
       path = Pathname(path)
       name = ::File.basename(path.to_s)
-
       rel_path = Pathname(path.to_s[(project_dir.to_s.size-project_root.to_s.size)..-1])
       is_toplevel = name == path.to_s[(project_dir.to_s.size+1)..-1]
-
       uri = RDF::URI('file:/' + rel_path.to_s)
 
       next if is_toplevel && !path.directory? # we don't support files in the root directory
@@ -77,33 +76,12 @@ class BackgroundInit
 
       if ::File.ftype(path) == 'directory' && path.parent.to_s != '.'
         parent = is_toplevel ? '_null' : 'file:/' + rel_path.parent.to_s
-
         folder_params = [project,uri,name,rel_path.to_s,parent]
         CWB::Folder.create(folder_params)
       elsif ::File.ftype(path) == 'file'
-        folder = 'file:/'  + rel_path.parent.to_s
-        created = ::File.ctime(path.to_s).to_datetime.to_s
-        size = ::File.size(path.to_s).to_s
-
-        if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
-          source = Magick::Image.read(path.to_s).first
-          source.format = 'PNG'
-          thumb = source.resize_to_fill(240,240)
-          clean_name = project_name.gsub(' ', '_')
-          FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-          thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
-          thumb.write "system/#{clean_name}_thumbs/#{thumb_name}"
-        end
-
-        file_descript = CWB::File.get_file_description(path.to_s)
-        modified = ::File.mtime(path.to_s).to_datetime.to_s
-        starred = 'false'
-        tag = 'nil'
-
-
-        file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag]
-        CWB::File.create(file_params)
+        CWB::File.file_creation(project, uri, name, path, rel_path, project_name)
       end
+
     end
 
     CWB::Project.create(project_params)
@@ -112,8 +90,8 @@ class BackgroundInit
       UserMailer.delay.init_completion_email(email, success=true, project_name)
     end
   rescue => e
-    logger.error e.message
-    logger.error e.backtrace.join("\n")
+    # logger.error e.message
+    # logger.error e.backtrace.join("\n")
     CWB::Project.delete(project.to_s)
     if email
       UserMailer.delay.init_completion_email(email, success=false, project_name)
