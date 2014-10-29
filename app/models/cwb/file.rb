@@ -80,7 +80,7 @@ module CWB
     def self.descriptions_whitelist
       [
         {
-          ext: '.max', description: '3D modeling/rendering file'
+          ext: '.max', description: '3D modeling / rendering file'
         },
         {
           ext: '.3dm', description: '2D/3D model file (Rhino)'
