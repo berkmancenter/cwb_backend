@@ -86,7 +86,7 @@ class BackgroundInit
       elsif ::File.ftype(path) == 'file'
         logger.info "creating file"
         logger.info "#{[project, uri, name, path, rel_path, project_name]}"
-        CWB::File.file_creation(project, uri, name, path, rel_path, project_name)
+        CWB::File.file_creation(project, uri, name, path, rel_path, project_name, nil, logger)
       end
 
     end

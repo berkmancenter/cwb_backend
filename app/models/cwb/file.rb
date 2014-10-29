@@ -96,19 +96,22 @@ module CWB
       end
     end
 
-    def self.file_creation(project, uri, name, path, rel_path, project_name, derivative=nil)
+    def self.file_creation(project, uri, name, path, rel_path, project_name, derivative=nil, logger=nil)
       folder = 'file:/'  + Pathname(rel_path).parent.to_s
       created = ::File.ctime(path.to_s).to_datetime.to_s
       size = ::File.size(path.to_s).to_s
 
       if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
+        logger.info "starting thumbnail generation"
         source = Magick::Image.read(path.to_s).first
         source.format = 'PNG'
         thumb = source.resize_to_fill(240,240)
         clean_name = project_name.gsub(' ', '_')
         FileUtils::mkdir_p "system/#{clean_name}_thumbs"
         thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
+        logger.info "writing thumbnail"
         thumb.write "system/#{clean_name}_thumbs/#{thumb_name}"
+        logger.info "finished thumbnail generation"
       end
       file_descript = CWB::File.get_file_description(path.to_s)
       modified = ::File.mtime(path.to_s).to_datetime.to_s
@@ -117,6 +120,7 @@ module CWB
       derivative = 'false' if derivative.nil? 
 
       file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag,derivative]
+      logger.info "creating file"
       CWB::File.create(file_params)
     end
   end
