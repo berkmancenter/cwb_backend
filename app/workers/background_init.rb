@@ -86,8 +86,7 @@ class BackgroundInit
       elsif ::File.ftype(path) == 'file'
         logger.info "creating file"
         logger.info "#{[project, uri, name, path, rel_path, project_name]}"
-        async_thumbnail = true
-        CWB::File.file_creation(project, uri, name, path, rel_path, project_name, async_thumbnail, nil, logger)
+        CWB::File.file_creation(project, uri, name, path, rel_path, project_name)
       end
 
     end

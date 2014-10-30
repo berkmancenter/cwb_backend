@@ -96,42 +96,26 @@ module CWB
       end
     end
 
-    def self.file_creation(project, uri, name, path, rel_path, project_name, async_thumbnail=false, derivative=nil, logger=nil)
+    def self.file_creation(project, uri, name, path, rel_path, project_name, derivative=nil)
       folder = 'file:/'  + Pathname(rel_path).parent.to_s
       created = ::File.ctime(path.to_s).to_datetime.to_s
       size = ::File.size(path.to_s).to_s
 
       if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
-        if logger
-          logger.info 'spawning thumbnail'
-          logger.info path.to_s
-        else
-          pp 'spawning thumbnail'
-          pp path.to_s
-        end
         clean_name = project_name.gsub(' ', '_')
         FileUtils::mkdir_p "system/#{clean_name}_thumbs"
         thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
+
         pid = spawn("convert #{path.to_s} -resize 240x240 system/#{clean_name}_thumbs/#{thumb_name}")
 
-        # if async_thumbnail
-        #   Process.detach pid
-        # else
-          Process.wait pid
-        # end
-
-        if logger
-          logger.info 'leaving thumbnail'
-        else
-          pp 'leaving thumbnail'
-        end
+        Process.wait pid
       end
 
       file_descript = CWB::File.get_file_description(path.to_s)
       modified = ::File.mtime(path.to_s).to_datetime.to_s
       starred = 'false'
       tag = 'nil'
-      derivative = 'false' if derivative.nil? 
+      derivative = 'false' if derivative.nil?
 
       file_params = [project,uri,name,rel_path.to_s,created,size,file_descript,folder,modified,starred,tag,derivative]
       CWB::File.create(file_params)
