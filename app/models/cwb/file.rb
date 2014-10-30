@@ -114,11 +114,11 @@ module CWB
         thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
         pid = spawn("convert #{path.to_s} -resize 240x240 system/#{clean_name}_thumbs/#{thumb_name}")
 
-        if async_thumbnail
-          Process.detach pid
-        else
+        # if async_thumbnail
+        #   Process.detach pid
+        # else
           Process.wait pid
-        end
+        # end
 
         if logger
           logger.info 'leaving thumbnail'
