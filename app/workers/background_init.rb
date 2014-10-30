@@ -87,7 +87,7 @@ class BackgroundInit
         logger.info "creating file"
         logger.info "#{[project, uri, name, path, rel_path, project_name]}"
         async_thumbnail = true
-        CWB::File.file_creation(project, uri, name, path, rel_path, project_name, async_thumbnail)
+        CWB::File.file_creation(project, uri, name, path, rel_path, project_name, async_thumbnail, nil, logger)
       end
 
     end

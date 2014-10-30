@@ -96,16 +96,34 @@ module CWB
       end
     end
 
-    def self.file_creation(project, uri, name, path, rel_path, project_name, async_thumbnail=false, derivative=nil)
+    def self.file_creation(project, uri, name, path, rel_path, project_name, async_thumbnail=false, derivative=nil, logger=nil)
       folder = 'file:/'  + Pathname(rel_path).parent.to_s
       created = ::File.ctime(path.to_s).to_datetime.to_s
       size = ::File.size(path.to_s).to_s
 
       if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
-        if async_thumbnail
-          GenerateThumbnail.perform_async(path, rel_path, project_name)
+        if logger
+          logger.info 'spawning thumbnail'
+          logger.info path.to_s
         else
-          GenerateThumbnail.new.perform(path, rel_path, project_name)
+          pp 'spawning thumbnail'
+          pp path.to_s
+        end
+        clean_name = project_name.gsub(' ', '_')
+        FileUtils::mkdir_p "system/#{clean_name}_thumbs"
+        thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
+        pid = spawn("convert #{path.to_s} -resize 240x240 system/#{clean_name}_thumbs/#{thumb_name}")
+
+        if async_thumbnail
+          Process.detach pid
+        else
+          Process.wait pid
+        end
+
+        if logger
+          logger.info 'leaving thumbnail'
+        else
+          pp 'leaving thumbnail'
         end
       end
 
