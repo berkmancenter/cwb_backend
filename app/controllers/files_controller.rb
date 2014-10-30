@@ -121,9 +121,10 @@ class FilesController < ApplicationController
     upload_file = params[:upload]
     parent_file = params[:file_id].to_s.gsub('file:/', '')
     project_name = params[:project_id].sub(CWB::BASE_URI.to_s, '')
+    clean_name = project_name.gsub(' ', '_')
 
-    FileUtils::mkdir_p "derivatives/#{project_name}"
-    upload_path = "derivatives/#{project_name}/"
+    FileUtils::mkdir_p "derivatives/#{clean_name}"
+    upload_path = "derivatives/#{clean_name}/"
     upload_name = Time.now.strftime("%y-%m-%d_%H-%M_") + upload_file.original_filename
     if CWB::File.upload_file(upload_file.tempfile, upload_path, upload_name)
       render json: { success: 'Derivative successfully uploaded' }, status: 200
