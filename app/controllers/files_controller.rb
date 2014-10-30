@@ -136,8 +136,9 @@ class FilesController < ApplicationController
     project = params[:project_id]
     uri = RDF::URI('file:/' +  rel_path)
     name = upload_file.original_filename
+    async_thumbnail = false
     derivative = parent_file
-    CWB::File.file_creation(project, uri, name, path, rel_path, project_name, derivative)
+    CWB::File.file_creation(project, uri, name, path, rel_path, project_name, async_thumbnail, derivative)
   end
 
   private
