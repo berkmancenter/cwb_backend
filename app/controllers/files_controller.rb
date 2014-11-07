@@ -127,18 +127,19 @@ class FilesController < ApplicationController
     upload_path = "derivatives/#{clean_name}/"
     upload_name = Time.now.strftime("%y-%m-%d_%H-%M_") + upload_file.original_filename
     if CWB::File.upload_file(upload_file.tempfile, upload_path, upload_name)
-      render json: { success: 'Derivative successfully uploaded' }, status: 200
+      path = upload_path + upload_name
+      rel_path = ::File.dirname(parent_file).to_s + '/' + upload_name
+      project = params[:project_id]
+      uri = RDF::URI('file:/' +  rel_path)
+      name = upload_file.original_filename
+      derivative = parent_file
+      CWB::File.file_creation(project, uri, name, path, rel_path, project_name, derivative)
+
+      query = CWB::File.nested_find(uri, project, tagged=true)
+      render json: { success: 'Derivative successfully uploaded', object: query }, status: 200
     else
       render json: { error: 'Derivative upload failed' }, status: 500 
     end
-
-    path = upload_path + upload_name
-    rel_path = ::File.dirname(parent_file).to_s + '/' + upload_name
-    project = params[:project_id]
-    uri = RDF::URI('file:/' +  rel_path)
-    name = upload_file.original_filename
-    derivative = parent_file
-    CWB::File.file_creation(project, uri, name, path, rel_path, project_name, derivative)
   end
 
   private
