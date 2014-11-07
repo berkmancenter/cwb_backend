@@ -136,6 +136,7 @@ class FilesController < ApplicationController
       CWB::File.file_creation(project, uri, name, path, rel_path, project_name, derivative)
 
       query = CWB::File.nested_find(uri, project, tagged=true)
+      query[:id] = uri.to_s
       render json: { success: 'Derivative successfully uploaded', object: query }, status: 200
     else
       render json: { error: 'Derivative upload failed' }, status: 500 
