@@ -7,14 +7,14 @@ mb_profile.save
 mb_account.profile_id = mb_profile.id
 mb_account.save
 
-puts 'Creating cwb account with credentials:'
-puts 'username: cwb, password: cwb'
-cwb_account = CWB::Account.new(username: 'cwb', password: 'cwb')
-cwb_account.save
-cwb_profile = cwb_account.build_profile(name: "CWB Tester", email: "cwb_tester@cyber.law.harvard.edu")
+puts 'Creating fwb account with credentials:'
+puts 'username: fwb, password: fwb'
+fwb_account = CWB::Account.new(username: 'fwb', password: 'fwb')
+fwb_account.save
+cwb_profile = fwb_account.build_profile(name: "FWB Tester", email: "fwb_tester@cyber.law.harvard.edu")
 cwb_profile.save
-cwb_account.profile_id = cwb_profile.id
-cwb_account.save
+fwb_account.profile_id = cwb_profile.id
+fwb_account.save
 
 puts 'Creating admin account with credentials:'
 puts 'username: jjubinville, password: jjubinville'

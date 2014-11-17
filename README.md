@@ -2,12 +2,12 @@ The back-end Rails application for the Curators Workbench.
 
 ## Installing
 
-It's recommended to install the front and back-end CWB applications in sibling directories. For example:
+It's recommended to install the front and back-end FWB applications in sibling directories named `fwb_frontend` and `fwb_backend`. For example:
 
-		git clone git@github.com:berkmancenter/cwb_frontend.git /system/code/cwb-sc
-		git clone git@github.com:berkmancenter/cwb_backend.git /system/code/cwb-rails
+		git clone git@github.com:berkmancenter/fwb_frontend.git /system/code/fwb_frontend
+		git clone git@github.com:berkmancenter/fwb_backend.git /system/code/fwb_backend
 
-After cloning the project, run `bundle install`.
+After cloning the project, move into the project folder and run `bundle install`.
 
 Create `database.yml` and `rdf_database.yml` files in the `config` directory, using the existing `*.example` files as a reference.
 
@@ -35,14 +35,14 @@ If you're not using OS X and Homebrew, please reference the project-specific doc
 
 After installing, setup your 4store database:
 
-		4s-backend-setup cwb
-		4s-backend cwb
+		4s-backend-setup fwb
+		4s-backend fwb
 
 ## Running
 
 Make sure 4store is running:
 
-		4s-httpd -p 8890 cwb
+		4s-httpd -p 8890 fwb
 
 Note: if you want to watch 4store's output pass the "-D" flag on the 4s-httdp command.
 
@@ -54,11 +54,11 @@ Get sidekiq running:
 
 		bundle exec sidekiq
 
-In order to run the CWB application, you need to build the front-end Sproutcore app into the back-end Rails app and then run the Rails app.
+In order to run the FWB application, you need to build the front-end Sproutcore app into the back-end Rails app and then run the Rails app.
 
 From the Sproutcore app directory:
 
-		sproutcore build cwb --buildroot ../cwb-rails/public
+		sproutcore build fwb --buildroot ../fwb_backend/public
 
 Then back in your rails app, start the server:
 
@@ -78,8 +78,8 @@ Note: This will remove any existing data and then populate your database using t
 
 To reset your 4store database:
 
-		4s-backend-destroy cwb
-		4s-backend-setup cwb
-		4s-backend cwb
+		4s-backend-destroy fwb
+		4s-backend-setup fwb
+		4s-backend fwb
 
 Note: This will remove any existing data.
