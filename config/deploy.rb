@@ -1,10 +1,10 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-set :application, 'cwb'
-set :repo_url, 'git@git.metabahn.net:client/cwb-rails.git'
+set :application, 'fwb'
+set :repo_url, 'git@git.metabahn.net:client/fwb_backend.git'
 
-set :deploy_to, '/var/apps/cwb'
+set :deploy_to, '/var/apps/fwb'
 set :scm, :git
 # set :branch, :develop
 
