@@ -106,7 +106,7 @@ module CWB
         FileUtils::mkdir_p "system/#{clean_name}_thumbs"
         thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
 
-        pid = spawn("convert -resize 240x240 #{path.gsub(' ', '\ ').to_s}[0] system/#{clean_name}_thumbs/#{thumb_name}")
+        pid = spawn("convert -resize 240x240 #{path.to_s.gsub(' ', '\ ').to_s}[0] system/#{clean_name}_thumbs/#{thumb_name}")
 
         Process.wait pid
       end
