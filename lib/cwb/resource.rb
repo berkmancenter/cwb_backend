@@ -167,19 +167,15 @@ class CWB::Resource
         attrs.merge!(hash)
       end
       if self == CWB::File
-        attrs[:tag] = tag_array
-        attrs[:tag].uniq!
+        attrs[:tag] = tag_array.uniq
       end
-      return attrs if subquery && !tagged
-      return attrs if subquery && ((index + 1) == sparql_solutions.count) && tagged
-      if !subquery && container_array.empty? 
+      return attrs if (subquery && !tagged) || (subquery && ((index + 1) == sparql_solutions.count) && tagged)
+      if !subquery && container_array.empty?
         container_array << attrs
         tag_array = []
       elsif !subquery
-        if container_array.last[:id] == attrs[:id]
-          if attrs[:tag]
-            container_array.last[:tag] << attrs[:tag].first unless  attrs[:tag].empty? || container_array.last[:tag].include?(attrs[:tag].first)
-          end
+        if mergable = container_array.detect { |a| a[:id] == attrs[:id] }
+          mergable[:tag] << attrs[:tag].first if Array(attrs[:tag]).first && !mergable[:tag].include?(attrs[:tag].first)
         else
           container_array << attrs
         end
