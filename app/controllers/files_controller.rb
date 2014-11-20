@@ -121,7 +121,7 @@ class FilesController < ApplicationController
     upload_file = params[:upload]
     parent_file = params[:file_id].to_s.gsub('file:/', '')
     project_name = params[:project_id].sub(CWB::BASE_URI.to_s, '')
-    clean_name = project_name.gsub(' ', '_')
+    clean_name = project_name.gsub(' ', '_').shellescape
 
     FileUtils::mkdir_p "derivatives/#{clean_name}"
     upload_path = "derivatives/#{clean_name}/"

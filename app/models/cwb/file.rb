@@ -102,11 +102,12 @@ module CWB
       size = ::File.size(path.to_s).to_s
 
       if %w(.jpg .jpeg .png .gif .tif .pdf).include?(Pathname(path.to_s).extname.to_s.downcase)
-        clean_name = project_name.gsub(' ', '_')
+        clean_name = project_name.gsub(' ', '_').shellescape
         FileUtils::mkdir_p "system/#{clean_name}_thumbs"
-        thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s)
+        thumb_name = BackgroundInit.scrub_path_to_png(rel_path.to_s).shellescape
 
-        pid = spawn("convert -resize 240x240 #{path.to_s.gsub(' ', '\ ').to_s}[0] system/#{clean_name}_thumbs/#{thumb_name}")
+        command = "convert -resize 240x240 #{path.to_s.to_s.shellescape}[0] system/#{clean_name}_thumbs/#{thumb_name}"
+        pid = spawn(command)
 
         Process.wait pid
       end

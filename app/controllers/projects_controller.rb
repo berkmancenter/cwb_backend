@@ -85,7 +85,7 @@ class ProjectsController < ApplicationController
   def derivatives_download
     project = CWB::Project.find(params[:project_id])
     project_name = Rails.root.join('derivatives', params[:project_id].sub(CWB::BASE_URI.to_s, '')).to_s
-    clean_name = project_name.gsub(' ', '_')
+    clean_name = project_name.gsub(' ', '_').shellescape
 
     CWB::Project.zip_derivative(clean_name)
     #send derives to endpoint
