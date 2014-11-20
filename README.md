@@ -83,3 +83,13 @@ To reset your 4store database:
 		4s-backend fwb
 
 Note: This will remove any existing data.
+
+## Monitoring
+
+When running on a server it's generally recommended to monitor proecess like Sidekiq and Redis to ensure they're running properly. There are several tools available that can do this for you, including:
+
+- [monit](https://bitbucket.org/tildeslash/monit/)
+- [god](https://github.com/mojombo/god)
+- [inspeqtor](https://github.com/mperham/inspeqtor)
+
+Instructions on installing and using these tools can be found on their respective sites, and the Sidekiq wiki contains a section dedicated to [monitoring](https://github.com/mperham/sidekiq/wiki/Monitoring) that contains more helpful info.
