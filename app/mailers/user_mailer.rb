@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default from: "notifications@fwb.berkmancenter.org"
+  default from: "notifications@cwb.metabahn.net"
 
   def init_completion_email(email, success, project_name)
     if success
