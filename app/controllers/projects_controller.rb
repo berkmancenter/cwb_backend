@@ -46,7 +46,7 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
-    project_name = params[:id].sub(CWB::BASE_URI.to_s, '')
+    project_name = params[:id].sub(CWB::BASE_URI.to_s, '').gsub(' ', '_')
     FileUtils.rm_rf("system/#{project_name}_thumbs")
     FileUtils.rm_rf("derivatives/#{project_name}")
 
@@ -85,15 +85,17 @@ class ProjectsController < ApplicationController
   def derivatives_download
     project = CWB::Project.find(params[:project_id])
     project_name = Rails.root.join('derivatives', params[:project_id].sub(CWB::BASE_URI.to_s, '')).to_s
-    clean_name = project_name.gsub(' ', '_').shellescape
+    clean_name = project_name.gsub(' ', '_')
+    FileUtils::mkdir_p(clean_name) unless File.directory?(clean_name)
 
-    CWB::Project.zip_derivative(clean_name)
+    zip_dir = Rails.root.join("derivatives", "derivatives-#{SecureRandom.hex(8)}.zip").to_s
+    CWB::Project.zip_derivative(clean_name, zip_dir)
     #send derives to endpoint
-    file_path = Rails.root.join('derivatives', 'derivatives.zip')
-    File.open(file_path, 'r') do |f|
+    File.open(zip_dir, 'r') do |f|
         send_data f.read, filename: "#{project[:name]}_#{Date.today}_derivatives.zip", type: 'application/zip'
     end
-    FileUtils.rm(Rails.root.join('derivatives', 'derivatives.zip'))
+    FileUtils.rm(zip_dir)
+    FileUtils.rm("#{zip_dir}_manifest.txt")
   end
 
   private
