@@ -35,7 +35,7 @@ class CWB::Resource
     array.each do |a|
       a.each_with_index do |aa, ind|
         if aa.is_a? String
-          a[ind] = "'#{aa}'"
+          a[ind] = "\"#{aa}\""
         else
           a[ind] = '<' + aa.to_s + '>'
         end
@@ -48,7 +48,7 @@ class CWB::Resource
   def self.create(params)
     triples = sparql_format(params)
     project_uri = '<' + params[0].to_s + '>'
-    uri = URI.parse("http://localhost:8890/update/")
+    uri = URI.parse(CWB.endpoint(:update))
     http = Net::HTTP.new(uri.host, uri.port)
     postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
     res = http.post(uri.request_uri, postdata)
@@ -60,7 +60,7 @@ class CWB::Resource
       split = split + '+.'
       split[0] = '' if split[0] == ' '
       split.gsub!('+', ' ')
-      Net::HTTP::post_form URI('http://localhost:8890/data/'), 
+      Net::HTTP::post_form URI(CWB.endpoint(:data)), 
         { "data" => "#{split}", "graph" => "#{params[0]}", "mime-type" => "application/x-turtle" }
     end
   end
@@ -71,7 +71,7 @@ class CWB::Resource
       split = split + '+.'
       split.gsub!('+', ' ')
       split[0] = '' if split[0] == ' '
-      Net::HTTP::post_form URI('http://localhost:8890/data/'), 
+      Net::HTTP::post_form URI(CWB.endpoint(:data)), 
         { "data" => "#{split}", "graph" => "#{params[0]}", "mime-type" => "application/x-turtle" }
     end
   end
@@ -79,7 +79,7 @@ class CWB::Resource
   def self.ssdelete(params)
     project_uri = '<' + params[0].to_s + '>'
     triples = sparql_format_single(params)
-    uri = URI.parse('http://localhost:8890/update/')
+    uri = URI.parse(CWB.endpoint(:update))
     http = Net::HTTP.new(uri.host, uri.port)
     postdata = %Q[update=DELETE+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
     request = Net::HTTP::Post.new(uri.request_uri)
@@ -90,7 +90,7 @@ class CWB::Resource
   def self.single_create(params)
     project_uri = '<' + params[0].to_s + '>'
     triples = sparql_format_single(params)
-    uri = URI.parse('http://localhost:8890/update/')
+    uri = URI.parse(CWB.endpoint(:update))
     http = Net::HTTP.new(uri.host, uri.port)
     postdata = %Q[update=INSERT+DATA+{+GRAPH+#{ project_uri }+{+#{ triples }+}+}]
     request = Net::HTTP::Post.new(uri.request_uri)
@@ -100,7 +100,7 @@ class CWB::Resource
 
   def self.single_delete(params)
     project_uri = '<' + params[0].to_s + '>'
-    uri = URI.parse('http://localhost:8890/update/')
+    uri = URI.parse(CWB.endpoint(:update))
     http = Net::HTTP.new(uri.host, uri.port)
     triples = sparql_format_single(params)
     triples.split('+.').each do |split|
@@ -129,7 +129,7 @@ class CWB::Resource
   end
 
   def self.delete(id, scope_id=nil)
-    uri = URI.parse('http://localhost:8890/update/')
+    uri = URI.parse(CWB.endpoint(:update))
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Delete.new(id)
     response = http.request(request)
